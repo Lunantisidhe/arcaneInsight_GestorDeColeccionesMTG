@@ -23,15 +23,25 @@ public class Main {
             String responseBody = response.body();
             JSONObject json = new JSONObject(responseBody);
 
-            System.out.println(response.statusCode());
-            System.out.println(json.toString(4));
+            //System.out.println(response.statusCode());
+            //System.out.println(json.toString(4));
+
+            /* *** prueba impresion *** */
+            String imgUrl = json.getJSONObject("image_uris").getString("art_crop");
+            PixelArt.printPixel(imgUrl, 3);
+            System.out.println();
+            System.out.println(json.getString("name") + " | " + json.getString("mana_cost"));
+            System.out.println(json.getString("type_line") + " | " + json.getString("set_name") + " | " + json.getString("rarity"));
+            System.out.println(json.getString("oracle_text"));
+            System.out.println(json.getString("collector_number") + " | " + "TM & c " + json.getString("released_at") + " Wizards of the Coast");
+            System.out.println(json.getString("set") + " . " + json.getString("lang") + " | " + json.getString("artist"));
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        PixelArt.printPixel("testImg", 3);
-        PixelArt.printPixel("https://cards.scryfall.io/art_crop/front/b/c/bce78225-9dbf-46c1-b63d-083c1858eb98.jpg?1680759056", 3);
-        PixelArt.printPixel("https://cards.scryfall.io/art_crop/front/d/9/d99a9a7d-d9ca-4c11-80ab-e39d5943a315.jpg?1632831210", 3);
+        //PixelArt.printPixel("testImg", 3);
+        //PixelArt.printPixel("https://cards.scryfall.io/art_crop/front/b/c/bce78225-9dbf-46c1-b63d-083c1858eb98.jpg?1680759056", 3);
+        //PixelArt.printPixel("https://cards.scryfall.io/art_crop/front/d/9/d99a9a7d-d9ca-4c11-80ab-e39d5943a315.jpg?1632831210", 3);
     }
 }
