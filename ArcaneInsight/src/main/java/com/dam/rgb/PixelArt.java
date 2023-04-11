@@ -41,6 +41,9 @@ public class PixelArt {
                 System.out.println();
             }
 
+            //resetea el color del texto de la consola
+            System.out.print("\033[38;2;" + 187 + ";" + 187 + ";" + 187 + "m");
+
         } catch (IOException e) {
             e.printStackTrace();
         }
