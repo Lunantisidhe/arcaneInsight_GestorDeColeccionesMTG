@@ -7,19 +7,11 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
-
-    static final String LOGO = """
-             
-             /\\___/\\   /\\___/\\\s
-            ( •   • ) ( o   o )\s
-              /   \\     /   \\\s
-             /     \\   /     \\ \s
-              arcane • insight
-              
-              
-            """;
 
     public static void main(String[] args) {
 
@@ -119,7 +111,7 @@ public class Main {
                     "https://api.scryfall.com/cards/named?fuzzy=amphin+cutt",
                     "https://api.scryfall.com/cards/named?fuzzy=dance+dead",
 
-                    "https://api.scryfall.com/cards/named?fuzzy=befriending+moths"
+                    "https://api.scryfall.com/cards/named?fuzzy=austere+command"
             };
 
             HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1)
@@ -138,10 +130,11 @@ public class Main {
                 printDetails(json);
             }
 
-            /*System.out.println(response.statusCode());
+            /*
             System.out.println(json.toString(4));
             String imgUrl = json.getJSONObject("image_uris").getString("art_crop");
             PixelArt.printPixel(imgUrl, 3);
+
             System.out.println("""
                     
                     ╔═════════════════════════════════════════════════════════╗
@@ -160,9 +153,6 @@ public class Main {
                     
                     """);
 
-            PixelArt.printPixel("testImg", 3);
-            PixelArt.printPixel("https://cards.scryfall.io/art_crop/front/b/c/bce78225-9dbf-46c1-b63d-083c1858eb98.jpg?1680759056", 3);
-            PixelArt.printPixel("https://cards.scryfall.io/art_crop/front/d/9/d99a9a7d-d9ca-4c11-80ab-e39d5943a315.jpg?1632831210", 3);
             */
 
 
@@ -180,49 +170,112 @@ public class Main {
             if (json.has("card_faces"))
                 card = json.getJSONArray("card_faces").getJSONObject(i);
 
-            System.out.println("\n_____");
+            printBorder(Position.TOP);
 
             //basic info
-            if (card.has("name"))
-                System.out.print(card.getString("name"));
-            if (card.has("mana_cost"))
-                System.out.println("\t" + card.getString("mana_cost"));
+            if (card.has("name") && card.has("mana_cost"))
+                printJustified(card.getString("name"), card.getString("mana_cost"));
             if (card.has("type_line"))
-                System.out.println(card.getString("type_line") + "\n");
+                printJustified(card.getString("type_line"), "");
+
+            printBorder(Position.CENTER);
 
             //text
             if (card.has("oracle_text"))
-                System.out.println(card.getString("oracle_text"));
+                squishText(card.getString("oracle_text"));
             if (card.has("flavor_text"))
-                System.out.println("\n" + card.getString("flavor_text"));
+                squishText(card.getString("flavor_text"));
 
             //extras
             if (card.has("power") && card.has("toughness"))
-                System.out.println("\n" + card.getString("power") + " / " + card.getString("toughness"));
-
+                printJustified("", card.getString("power") + " / " + card.getString("toughness"));
             if (card.has("defense"))
-                System.out.println("\n" + card.getString("defense"));
-
+                printJustified("", card.getString("defense"));
             if (card.has("loyalty"))
-                System.out.println("\n" + card.getString("loyalty"));
-
+                System.out.println(card.getString("loyalty"));
             if (card.has("attraction_lights"))
-                System.out.println("\n" + card.getJSONArray("attraction_lights"));
+                System.out.println(card.getJSONArray("attraction_lights"));
+            if (card.has("hand_modifier") && card.has("life_modifier"))
+                System.out.println(card.getString("hand_modifier") + " / " + card.getString("life_modifier"));
 
-            if (card.has("hand_modifier") && card.has("life_modifier")) {
-                System.out.println("\n" + card.getString("hand_modifier") + " / " + card.getString("life_modifier"));
-            }
+            printBorder(Position.CENTER);
 
             //bottom info
-            if (card.has("rarity") && card.has("collector_number") && card.has("released_at"))
-                System.out.println("\n" + card.getString("rarity") + " " + card.getString("collector_number") + "\t" + card.getString("released_at"));
+            if (json.has("rarity") && json.has("collector_number") && json.has("released_at"))
+                printJustified(json.getString("rarity").toUpperCase().charAt(0) + " "
+                        + json.getString("collector_number"), "™ & © "
+                        + LocalDate.parse(json.getString("released_at")).getYear() + " Wizards of the Coast");
+            if (json.has("set") && json.has("foil") && json.has("lang") && json.has("artist"))
+                printJustified(json.getString("set").toUpperCase() + " "
+                        + foilSymbol(Boolean.parseBoolean(json.getString("foil"))) + " "
+                        + json.getString("lang").toUpperCase() + " — " + json.getString("artist"), "");
 
-            if (card.has("set") && card.has("foil") && card.has("lang") && card.has("artist"))
-                System.out.println(card.getString("set") + " " + card.getString("foil") + " " + card.getString("lang") + " " + card.getString("artist"));
-
+            printBorder(Position.BOTTOM);
 
             if (!json.has("card_faces"))
                 break;
+        }
+    }
+
+    public static void printJustified (String left, String right) {
+        int spaces = (Style.CARD_WIDTH - 4) - left.length() - right.length();
+
+        System.out.print("║ " + left);
+
+        for(int i = 0; i < spaces; i++)
+            System.out.print(" ");
+
+        System.out.println(right + " ║");
+    }
+
+    public static String foilSymbol(boolean foil) {
+        return foil ? "*" : "•";
+    }
+
+    public static void squishText(String textBlock) {
+
+        String[] splitText = textBlock.split("\n");
+
+        for (String text : splitText) {
+            int start = 0, end = 0;
+
+            //calcula mientras no se termine el texto
+            while (end < text.length()) {
+
+                //calcula el segmento que entra en los caracteres establecidos
+                end = Math.min(start + (Style.CARD_WIDTH - 4), text.length());
+
+                //ajusta el final si se va a cortar a la mitad una palabra
+                if (end < text.length() && !Character.isWhitespace(text.charAt(end))) {
+                    int lastSpace = text.substring(start, end).lastIndexOf(' ');
+                    if (lastSpace != -1)
+                        end = start + lastSpace;
+                }
+
+                printJustified(text.substring(start, end).trim(), "");
+                start = end;
+            }
+        }
+    }
+
+    public static void printBorder(Enum<Position> position) {
+        if (position == Position.TOP) {
+            System.out.print(Style.TOP_LEFT_CORNER);
+            for (int i = 0; i < (Style.CARD_WIDTH - 2); i++)
+                System.out.print(Style.HORIZONTAL_BORDER);
+            System.out.println(Style.TOP_RIGHT_CORNER);
+
+        } else if (position == Position.CENTER) {
+            System.out.print(Style.CENTER_LEFT_CONNECTOR);
+            for (int i = 0; i < (Style.CARD_WIDTH - 2); i++)
+                System.out.print(Style.LIGHT_HORIZONTAL_BORDER);
+            System.out.println(Style.CENTER_RIGHT_CONNECTOR);
+
+        } else if (position == Position.BOTTOM) {
+            System.out.print(Style.BOTTOM_LEFT_CORNER);
+            for (int i = 0; i < (Style.CARD_WIDTH - 2); i++)
+                System.out.print(Style.HORIZONTAL_BORDER);
+            System.out.println(Style.BOTTOM_RIGHT_CORNER);
         }
     }
 }
