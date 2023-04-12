@@ -1,5 +1,8 @@
 package com.dam.rgb;
 
+import com.dam.rgb.visual.PixelArt;
+import com.dam.rgb.visual.Position;
+import com.dam.rgb.visual.Style;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -8,17 +11,14 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
-public class Main {
+public class ArcaneInsight {
 
     public static void main(String[] args) {
 
-        //System.out.println(LOGO);
+        System.out.println(Style.LOGO);
 
         try {
-
             String[] urls = {
                     /* types */
                     //artifact
@@ -110,15 +110,12 @@ public class Main {
                     "https://api.scryfall.com/cards/named?fuzzy=okina+temple",
                     "https://api.scryfall.com/cards/named?fuzzy=amphin+cutt",
                     "https://api.scryfall.com/cards/named?fuzzy=dance+dead",
-
-                    "https://api.scryfall.com/cards/named?fuzzy=austere+command"
             };
 
             HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1)
                     .followRedirects(HttpClient.Redirect.NORMAL).build();
 
             for (String url : urls) {
-
                 HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create(url))
                         .headers("Accept", "application/json").setHeader("User-Agent", "Mozilla/5.0").build();
 
@@ -126,49 +123,31 @@ public class Main {
                 String responseBody = response.body();
                 JSONObject json = new JSONObject(responseBody);
 
-                /* *** prueba impresion *** */
-                printDetails(json);
+                printCard(json);
+                //System.out.println(json.toString(4));
             }
-
-            /*
-            System.out.println(json.toString(4));
-            String imgUrl = json.getJSONObject("image_uris").getString("art_crop");
-            PixelArt.printPixel(imgUrl, 3);
-
-            System.out.println("""
-                    
-                    ╔═════════════════════════════════════════════════════════╗
-                    ║ Austere Command                               {4}{W}{W} ║
-                    ║ Sorcery                                                 ║
-                    ╟─────────────────────────────────────────────────────────╢
-                    ║ Choose two —                                            ║
-                    ║ • Destroy all artifacts.                                ║
-                    ║ • Destroy all enchantments.                             ║
-                    ║ • Destroy all creatures with mana value 3 or less.      ║
-                    ║ • Destroy all creatures with mana value 4 or greater.   ║
-                    ╟─────────────────────────────────────────────────────────╢
-                    ║ R 0172                  ™ & © 2023 Wizards of the Coast ║
-                    ║ MOC • EN — Anna Steinbauer                              ║
-                    ╚═════════════════════════════════════════════════════════╝
-                    
-                    """);
-
-            */
-
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static void printDetails(JSONObject json) throws JSONException {
+
+    public static void printCard(JSONObject json) throws JSONException {
 
         JSONObject card = json;
 
         for (int i = 0; i < 2; i++) {
             if (json.has("card_faces"))
                 card = json.getJSONArray("card_faces").getJSONObject(i);
+
+            //imagen
+            if (card.has("image_uris")) {
+                if (card.getJSONObject("image_uris").has("art_crop"))
+                    PixelArt.printPixel(card.getJSONObject("image_uris").getString("art_crop"), 3);
+            } else if (json.has("image_uris")) {
+                if (json.getJSONObject("image_uris").has("art_crop"))
+                    PixelArt.printPixel(json.getJSONObject("image_uris").getString("art_crop"), 3);
+            }
 
             printBorder(Position.TOP);
 
@@ -217,19 +196,37 @@ public class Main {
         }
     }
 
+
+    public static void printBorder(Enum<Position> position) {
+        if (position == Position.TOP) {
+            System.out.print(Style.TOP_LEFT_CORNER);
+            for (int i = 0; i < (Style.CARD_WIDTH - 2); i++)
+                System.out.print(Style.HORIZONTAL_BORDER);
+            System.out.println(Style.TOP_RIGHT_CORNER);
+
+        } else if (position == Position.CENTER) {
+            System.out.print(Style.CENTER_LEFT_CONNECTOR);
+            for (int i = 0; i < (Style.CARD_WIDTH - 2); i++)
+                System.out.print(Style.LIGHT_HORIZONTAL_BORDER);
+            System.out.println(Style.CENTER_RIGHT_CONNECTOR);
+
+        } else if (position == Position.BOTTOM) {
+            System.out.print(Style.BOTTOM_LEFT_CORNER);
+            for (int i = 0; i < (Style.CARD_WIDTH - 2); i++)
+                System.out.print(Style.HORIZONTAL_BORDER);
+            System.out.println(Style.BOTTOM_RIGHT_CORNER);
+        }
+    }
+
     public static void printJustified (String left, String right) {
         int spaces = (Style.CARD_WIDTH - 4) - left.length() - right.length();
 
-        System.out.print("║ " + left);
+        System.out.print(Style.VERTICAL_BORDER + " " + left);
 
         for(int i = 0; i < spaces; i++)
             System.out.print(" ");
 
-        System.out.println(right + " ║");
-    }
-
-    public static String foilSymbol(boolean foil) {
-        return foil ? "*" : "•";
+        System.out.println(right + " " + Style.VERTICAL_BORDER);
     }
 
     public static void squishText(String textBlock) {
@@ -258,24 +255,7 @@ public class Main {
         }
     }
 
-    public static void printBorder(Enum<Position> position) {
-        if (position == Position.TOP) {
-            System.out.print(Style.TOP_LEFT_CORNER);
-            for (int i = 0; i < (Style.CARD_WIDTH - 2); i++)
-                System.out.print(Style.HORIZONTAL_BORDER);
-            System.out.println(Style.TOP_RIGHT_CORNER);
-
-        } else if (position == Position.CENTER) {
-            System.out.print(Style.CENTER_LEFT_CONNECTOR);
-            for (int i = 0; i < (Style.CARD_WIDTH - 2); i++)
-                System.out.print(Style.LIGHT_HORIZONTAL_BORDER);
-            System.out.println(Style.CENTER_RIGHT_CONNECTOR);
-
-        } else if (position == Position.BOTTOM) {
-            System.out.print(Style.BOTTOM_LEFT_CORNER);
-            for (int i = 0; i < (Style.CARD_WIDTH - 2); i++)
-                System.out.print(Style.HORIZONTAL_BORDER);
-            System.out.println(Style.BOTTOM_RIGHT_CORNER);
-        }
+    public static String foilSymbol(boolean foil) {
+        return foil ? "*" : "•";
     }
 }

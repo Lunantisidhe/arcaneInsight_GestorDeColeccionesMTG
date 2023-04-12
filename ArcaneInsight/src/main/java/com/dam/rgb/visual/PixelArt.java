@@ -1,4 +1,4 @@
-package com.dam.rgb;
+package com.dam.rgb.visual;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
