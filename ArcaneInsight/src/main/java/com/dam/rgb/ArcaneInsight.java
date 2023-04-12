@@ -1,8 +1,7 @@
 package com.dam.rgb;
 
-import com.dam.rgb.visual.PixelArt;
-import com.dam.rgb.visual.Position;
-import com.dam.rgb.visual.Style;
+import com.dam.rgb.visual.Colorize;
+import com.dam.rgb.visual.enums.Position;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -12,11 +11,15 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
 
+import static com.dam.rgb.visual.Style.*;
+import static com.dam.rgb.visual.enums.Colors.*;
+import static com.dam.rgb.visual.enums.Position.*;
+
 public class ArcaneInsight {
 
     public static void main(String[] args) {
 
-        System.out.println(Style.LOGO);
+        System.out.println(LOGO);
 
         try {
             String[] urls = {
@@ -101,10 +104,6 @@ public class ArcaneInsight {
                     //dungeon
                     "https://api.scryfall.com/cards/named?fuzzy=dungeon+mad+mage",
 
-                    /* un */
-                    "https://api.scryfall.com/cards/named?fuzzy=market+elemental",
-                    "https://api.scryfall.com/cards/named?fuzzy=bureaucracy",
-
                     /* conflictive */
                     "https://api.scryfall.com/cards/named?fuzzy=asmora",
                     "https://api.scryfall.com/cards/named?fuzzy=okina+temple",
@@ -141,15 +140,15 @@ public class ArcaneInsight {
                 card = json.getJSONArray("card_faces").getJSONObject(i);
 
             //imagen
-            if (card.has("image_uris")) {
+            /* if (card.has("image_uris")) {
                 if (card.getJSONObject("image_uris").has("art_crop"))
                     PixelArt.printPixel(card.getJSONObject("image_uris").getString("art_crop"), 3);
             } else if (json.has("image_uris")) {
                 if (json.getJSONObject("image_uris").has("art_crop"))
                     PixelArt.printPixel(json.getJSONObject("image_uris").getString("art_crop"), 3);
-            }
+            } */
 
-            printBorder(Position.TOP);
+            printBorder(TOP);
 
             //basic info
             if (card.has("name") && card.has("mana_cost"))
@@ -157,7 +156,7 @@ public class ArcaneInsight {
             if (card.has("type_line"))
                 printJustified(card.getString("type_line"), "");
 
-            printBorder(Position.CENTER);
+            printBorder(CENTER);
 
             //text
             if (card.has("oracle_text"))
@@ -171,13 +170,13 @@ public class ArcaneInsight {
             if (card.has("defense"))
                 printJustified("", card.getString("defense"));
             if (card.has("loyalty"))
-                System.out.println(card.getString("loyalty"));
+                printJustified("", card.getString("loyalty"));
             if (card.has("attraction_lights"))
                 System.out.println(card.getJSONArray("attraction_lights"));
             if (card.has("hand_modifier") && card.has("life_modifier"))
                 System.out.println(card.getString("hand_modifier") + " / " + card.getString("life_modifier"));
 
-            printBorder(Position.CENTER);
+            printBorder(CENTER);
 
             //bottom info
             if (json.has("rarity") && json.has("collector_number") && json.has("released_at"))
@@ -189,7 +188,7 @@ public class ArcaneInsight {
                         + foilSymbol(Boolean.parseBoolean(json.getString("foil"))) + " "
                         + json.getString("lang").toUpperCase() + " — " + json.getString("artist"), "");
 
-            printBorder(Position.BOTTOM);
+            printBorder(BOTTOM);
 
             if (!json.has("card_faces"))
                 break;
@@ -198,35 +197,42 @@ public class ArcaneInsight {
 
 
     public static void printBorder(Enum<Position> position) {
-        if (position == Position.TOP) {
-            System.out.print(Style.TOP_LEFT_CORNER);
-            for (int i = 0; i < (Style.CARD_WIDTH - 2); i++)
-                System.out.print(Style.HORIZONTAL_BORDER);
-            System.out.println(Style.TOP_RIGHT_CORNER);
+        if (position == TOP) {
+            System.out.print(TOP_LEFT_CORNER);
+            for (int i = 0; i < (CARD_WIDTH - 2); i++)
+                System.out.print(HORIZONTAL_BORDER);
+            System.out.println(TOP_RIGHT_CORNER);
 
-        } else if (position == Position.CENTER) {
-            System.out.print(Style.CENTER_LEFT_CONNECTOR);
-            for (int i = 0; i < (Style.CARD_WIDTH - 2); i++)
-                System.out.print(Style.LIGHT_HORIZONTAL_BORDER);
-            System.out.println(Style.CENTER_RIGHT_CONNECTOR);
+        } else if (position == CENTER) {
+            System.out.print(CENTER_LEFT_CONNECTOR);
+            for (int i = 0; i < (CARD_WIDTH - 2); i++)
+                System.out.print(LIGHT_HORIZONTAL_BORDER);
+            System.out.println(CENTER_RIGHT_CONNECTOR);
 
-        } else if (position == Position.BOTTOM) {
-            System.out.print(Style.BOTTOM_LEFT_CORNER);
-            for (int i = 0; i < (Style.CARD_WIDTH - 2); i++)
-                System.out.print(Style.HORIZONTAL_BORDER);
-            System.out.println(Style.BOTTOM_RIGHT_CORNER);
+        } else if (position == BOTTOM) {
+            System.out.print(BOTTOM_LEFT_CORNER);
+            for (int i = 0; i < (CARD_WIDTH - 2); i++)
+                System.out.print(HORIZONTAL_BORDER);
+            System.out.println(BOTTOM_RIGHT_CORNER);
         }
     }
 
     public static void printJustified (String left, String right) {
-        int spaces = (Style.CARD_WIDTH - 4) - left.length() - right.length();
 
-        System.out.print(Style.VERTICAL_BORDER + " " + left);
+        int spaces = (CARD_WIDTH - 4) - left.length() - right.length();
+
+        System.out.print(VERTICAL_BORDER + " " + left);
 
         for(int i = 0; i < spaces; i++)
             System.out.print(" ");
 
-        System.out.println(right + " " + Style.VERTICAL_BORDER);
+        //impresion simbolos de mana
+        if (right.contains("}")) {
+            colorManaSymbol(right);
+            System.out.println(" " + VERTICAL_BORDER);
+
+        } else
+            System.out.println(right + " " + VERTICAL_BORDER);
     }
 
     public static void squishText(String textBlock) {
@@ -240,7 +246,7 @@ public class ArcaneInsight {
             while (end < text.length()) {
 
                 //calcula el segmento que entra en los caracteres establecidos
-                end = Math.min(start + (Style.CARD_WIDTH - 4), text.length());
+                end = Math.min(start + (CARD_WIDTH - 4), text.length());
 
                 //ajusta el final si se va a cortar a la mitad una palabra
                 if (end < text.length() && !Character.isWhitespace(text.charAt(end))) {
@@ -257,5 +263,36 @@ public class ArcaneInsight {
 
     public static String foilSymbol(boolean foil) {
         return foil ? "*" : "•";
+    }
+
+    public static void colorManaSymbol(String manaCost) {
+
+        //busca el inicio del simbolo de mana
+        int i = 0;
+        while (i < manaCost.length()) {
+            if (manaCost.charAt(i) == '{') {
+                int end = manaCost.indexOf('}', i + 1);
+                String manaSymbol = manaCost.substring(i, end + 1);
+
+                //mana partido
+                if (manaSymbol.contains("/"))
+                    Colorize.printColorized(manaSymbol, GOLDEN);
+
+                else {
+                    //lo colorea de forma correspondiente
+                    switch (manaSymbol) {
+                        case "{W}" -> Colorize.printColorized(manaSymbol, WHITE);
+                        case "{U}" -> Colorize.printColorized(manaSymbol, BLUE);
+                        case "{B}" -> Colorize.printColorized(manaSymbol, BLACK);
+                        case "{R}" -> Colorize.printColorized(manaSymbol, RED);
+                        case "{G}" -> Colorize.printColorized(manaSymbol, GREEN);
+                        default -> Colorize.printColorized(manaSymbol, SILVER);
+                    }
+                }
+                i = end + 1;
+
+            } else
+                i++;
+        }
     }
 }
