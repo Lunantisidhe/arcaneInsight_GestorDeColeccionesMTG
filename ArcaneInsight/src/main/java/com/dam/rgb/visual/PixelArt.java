@@ -33,16 +33,13 @@ public class PixelArt {
             //convierte la imagen a pixeles ascii coloreados
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
-                    //calcula el color del bloque y lo imprime
+                    //calcula el color del bloque, lo imprime y resetea el color del texto de la consola
                     Color color = new Color(resizedImg.getRGB(x, y));
-                    System.out.print("\033[38;2;" + color.getRed() + ";" + color.getGreen() + ";" + color.getBlue() + "m" + ASCII_PIXEL);
+                    System.out.print("\033[38;2;" + color.getRed() + ";" + color.getGreen() + ";" + color.getBlue()
+                            + "m" + ASCII_PIXEL + "\033[0m");
                 }
                 System.out.println();
             }
-
-            //resetea el color del texto de la consola
-            System.out.print("\033[38;2;" + 187 + ";" + 187 + ";" + 187 + "m");
-
         } catch (IOException e) {
             e.printStackTrace();
         }

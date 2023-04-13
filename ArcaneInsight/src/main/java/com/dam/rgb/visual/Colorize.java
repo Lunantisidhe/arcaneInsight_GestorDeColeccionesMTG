@@ -41,14 +41,11 @@ public class Colorize {
         else if (color.equals(GREY))
             colors = grey;
 
-        //imprime el texto en el color correspondiente
-        System.out.print("\033[38;2;" + colors[0] + ";" + colors[1] + ";" + colors[2] + "m" + text);
-
-        //resetea el color del texto de la consola
-        System.out.print("\033[38;2;" + 187 + ";" + 187 + ";" + 187 + "m");
+        //imprime el texto en el color correspondiente y resetea el color del texto de la consola
+        System.out.print("\033[38;2;" + colors[0] + ";" + colors[1] + ";" + colors[2] + "m" + text + "\033[0m");
     }
 
-    public static Colors chooseColor(JSONArray colorIdentity) { //TODO optz
+    public static Colors chooseColor(JSONArray colorIdentity) {
 
         if (colorIdentity.toString().length() > 5)
             return GOLDEN;
