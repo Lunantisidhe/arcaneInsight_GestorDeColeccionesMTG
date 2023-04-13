@@ -207,24 +207,31 @@ public class ArcaneInsight {
 
     public static void printBorder(Enum<Position> position, Colors color) {
 
+        String left = null, center = null, right = null;
+
         if (position == TOP) {
-            Colorize.printColorized(TOP_LEFT_CORNER, color);
-            for (int i = 0; i < (CARD_WIDTH - 2); i++)
-                Colorize.printColorized(HORIZONTAL_BORDER, color);
-            Colorize.printColorized(TOP_RIGHT_CORNER + "\n", color);
+            left = TOP_LEFT_CORNER;
+            center = HORIZONTAL_BORDER;
+            right = TOP_RIGHT_CORNER;
 
         } else if (position == CENTER) {
-            Colorize.printColorized(CENTER_LEFT_CONNECTOR, color);
-            for (int i = 0; i < (CARD_WIDTH - 2); i++)
-                Colorize.printColorized(LIGHT_HORIZONTAL_BORDER, color);
-            Colorize.printColorized(CENTER_RIGHT_CONNECTOR + "\n", color);
+            left = CENTER_LEFT_CONNECTOR;
+            center = LIGHT_HORIZONTAL_BORDER;
+            right = CENTER_RIGHT_CONNECTOR;
 
         } else if (position == BOTTOM) {
-            Colorize.printColorized(BOTTOM_LEFT_CORNER, color);
-            for (int i = 0; i < (CARD_WIDTH - 2); i++)
-                Colorize.printColorized(HORIZONTAL_BORDER, color);
-            Colorize.printColorized(BOTTOM_RIGHT_CORNER + "\n", color);
+            left = BOTTOM_LEFT_CORNER;
+            center = HORIZONTAL_BORDER;
+            right = BOTTOM_RIGHT_CORNER;
         }
+
+        Colorize.printColorized(left, color);
+
+        for (int i = 0; i < (CARD_WIDTH - 2); i++)
+            Colorize.printColorized(center, color);
+
+        Colorize.printColorized(right + "\n", color);
+
     }
 
     public static void printJustified (String left, String right, Colors color) {
