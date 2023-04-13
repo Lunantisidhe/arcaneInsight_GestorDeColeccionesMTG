@@ -20,41 +20,50 @@ public class Colorize {
             "G", GREEN
     );
 
-    public static void printColorized(String text, Enum<Colors> color) {
+    public static void printColorized(String text, Colors color) {
 
-        int[] colors = new int[3];
+        int[] colorValues = new int[3];
 
         if (color.equals(WHITE))
-            colors = white;
+            colorValues = white;
         else if (color.equals(BLUE))
-            colors = blue;
+            colorValues = blue;
         else if (color.equals(BLACK))
-            colors = black;
+            colorValues = black;
         else if (color.equals(RED))
-            colors = red;
+            colorValues = red;
         else if (color.equals(GREEN))
-            colors = green;
+            colorValues = green;
         else if (color.equals(GOLDEN))
-            colors = golden;
+            colorValues = golden;
         else if (color.equals(SILVER))
-            colors = silver;
+            colorValues = silver;
         else if (color.equals(GREY))
-            colors = grey;
+            colorValues = grey;
 
         //imprime el texto en el color correspondiente y resetea el color del texto de la consola
-        System.out.print("\033[38;2;" + colors[0] + ";" + colors[1] + ";" + colors[2] + "m" + text + "\033[0m");
+        System.out.print("\033[38;2;" + colorValues[0] + ";" + colorValues[1] + ";" + colorValues[2] + "m" + text + "\033[0m");
     }
 
-    public static Colors chooseColor(JSONArray colorIdentity) {
+    public static Colors[] chooseColor(JSONArray colorIdentity) {
 
-        if (colorIdentity.toString().length() > 5)
-            return GOLDEN;
+        //carta tricolor
+        if (colorIdentity.toString().length() >= 13)
+            return new Colors[]{GOLDEN};
 
+        //carta bicolor
+        else if (colorIdentity.toString().length() == 9)
+            return new Colors[]{
+                    colorCorrespondency.getOrDefault(String.valueOf(colorIdentity.toString().charAt(2)), SILVER),
+                    colorCorrespondency.getOrDefault(String.valueOf(colorIdentity.toString().charAt(6)), SILVER)};
+
+        //carta incolora
         else if (colorIdentity.toString().equals("[]"))
-            return SILVER;
+            return new Colors[]{SILVER};
 
+        //carta monocolor
         else
-            return colorCorrespondency.getOrDefault(String.valueOf(colorIdentity.toString().charAt(2)), GREY);
+            return new Colors[]{colorCorrespondency.getOrDefault(String.valueOf(colorIdentity.toString().charAt(2)), SILVER)};
     }
 
     public static void printTextWithColoredManaSymbols(String text) {

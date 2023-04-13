@@ -15,7 +15,7 @@ public class Printer {
 
     public static void printCard(JSONObject json) {
         try {
-            Colors colorIdentity = Colorize.chooseColor(json.getJSONArray("color_identity"));
+            Colors[] colorIdentity = Colorize.chooseColor(json.getJSONArray("color_identity"));
 
             if (!json.optString("card_faces").isEmpty()) {
                 JSONArray cardFaces = json.getJSONArray("card_faces");
@@ -33,7 +33,7 @@ public class Printer {
         }
     }
 
-    private static void printCardFace(JSONObject json, JSONObject card, Colors colorIdentity) {
+    private static void printCardFace(JSONObject json, JSONObject card, Colors[] colorIdentity) {
 
         //imagen
         /*try {
@@ -110,7 +110,7 @@ public class Printer {
         printBorder(BOTTOM, colorIdentity);
     }
 
-    public static void printBorder(Position position, Colors color) {
+    public static void printBorder(Position position, Colors[] colors) {
 
         String left = null, center = null, right = null;
 
@@ -130,31 +130,31 @@ public class Printer {
             right = BOTTOM_RIGHT_CORNER;
         }
 
-        Colorize.printColorized(left, color);
+        Colorize.printColorized(left, colors[0]);
 
         for (int i = 0; i < (CARD_WIDTH - 2); i++)
-            Colorize.printColorized(center, color);
+            Colorize.printColorized(center, colors.length > 1 && i >= (CARD_WIDTH - 2) / 2 ? colors[1] : colors[0]);
 
-        Colorize.printColorized(right + "\n", color);
+        Colorize.printColorized(right + "\n", colors.length > 1 ? colors[1] : colors[0]);
 
     }
 
-    public static void printJustified (String left, String right, Colors color, boolean italic) { //TODO
+    public static void printJustified (String left, String right, Colors[] colors, boolean italic) {
 
         int spaces = (CARD_WIDTH - 4) - left.length() - right.length();
         String spacing = " ".repeat(spaces);
 
         //impresion izquierda
-        Colorize.printColorized(VERTICAL_BORDER, color);
+        Colorize.printColorized(VERTICAL_BORDER, colors[0]);
         System.out.print(italic ? " \033[3m" : " ");
         Colorize.printTextWithColoredManaSymbols(left + "\033[0m" + spacing);
 
         //impresion derecha
         Colorize.printTextWithColoredManaSymbols(right);
-        Colorize.printColorized(" " + VERTICAL_BORDER + "\n", color);
+        Colorize.printColorized(" " + VERTICAL_BORDER + "\n", colors.length > 1 ? colors[1] : colors[0]);
     }
 
-    public static void squishText(String textBlock, Colors color, boolean italic) {
+    public static void squishText(String textBlock, Colors[] colors, boolean italic) {
 
         String[] splitText = textBlock.split("\n");
 
@@ -174,7 +174,7 @@ public class Printer {
                         end = start + lastSpace;
                 }
 
-                printJustified(text.substring(start, end).trim(), "", color, italic);
+                printJustified(text.substring(start, end).trim(), "", colors, italic);
                 start = end;
             }
         }
