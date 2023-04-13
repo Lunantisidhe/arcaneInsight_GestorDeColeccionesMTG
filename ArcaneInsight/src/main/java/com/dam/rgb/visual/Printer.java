@@ -139,25 +139,19 @@ public class Printer {
 
     }
 
-    public static void printJustified (String left, String right, Colors color, boolean italic) {
+    public static void printJustified (String left, String right, Colors color, boolean italic) { //TODO
 
         int spaces = (CARD_WIDTH - 4) - left.length() - right.length();
         String spacing = " ".repeat(spaces);
 
+        //impresion izquierda
         Colorize.printColorized(VERTICAL_BORDER, color);
         System.out.print(italic ? " \033[3m" : " ");
-        System.out.print(left + "\033[0m" + spacing);
+        Colorize.printTextWithColoredManaSymbols(left + "\033[0m" + spacing);
 
-
-        //impresion simbolos de mana
-        if (right.contains("}")) {
-            Colorize.colorManaSymbol(right);
-            Colorize.printColorized(" " + VERTICAL_BORDER + "\n", color);
-
-        } else {
-            System.out.print(right + " ");
-            Colorize.printColorized(VERTICAL_BORDER + "\n", color);
-        }
+        //impresion derecha
+        Colorize.printTextWithColoredManaSymbols(right);
+        Colorize.printColorized(" " + VERTICAL_BORDER + "\n", color);
     }
 
     public static void squishText(String textBlock, Colors color, boolean italic) {

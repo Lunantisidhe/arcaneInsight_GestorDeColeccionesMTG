@@ -57,24 +57,46 @@ public class Colorize {
             return colorCorrespondency.getOrDefault(String.valueOf(colorIdentity.toString().charAt(2)), GREY);
     }
 
-    public static void colorManaSymbol(String manaCost) {
+    public static void printTextWithColoredManaSymbols(String text) {
 
         int i = 0;
-        while (i < manaCost.length()) {
-            int startIndex = manaCost.indexOf('{', i);
-            if (startIndex == -1)
+        while (i < text.length()) {
+            int startIndex = text.indexOf('{', i);
+            if (startIndex == -1) {
+                //si no quedan mas simbolos de mana, termina de imprimir el texto
+                printColorized(text.substring(i), GREY);
                 break;
+            }
 
-            int endIndex = manaCost.indexOf('}', startIndex + 1);
-            if (endIndex == -1)
+            //imprime el texto entre la posicion actual y el simbolo de mana
+            if (startIndex > i)
+                printColorized(text.substring(i, startIndex), GREY);
+
+            int endIndex = text.indexOf('}', startIndex + 1);
+            if (endIndex == -1) {
+                //si no quedan mas simbolos de mana, termina de imprimir el texto
+                printColorized(text.substring(i), GREY);
                 break;
+            }
 
             //aisla el simbolo de mana
-            String manaSymbol = manaCost.substring(startIndex, endIndex + 1);
+            String manaSymbol = text.substring(startIndex, endIndex + 1);
 
             //mana partido
-            if (manaSymbol.contains("/"))
-                printColorized(manaSymbol, GOLDEN);
+            if (manaSymbol.contains("/")) {
+                //separa los simbolos para colorearlos por separado
+                String[] splitSymbols = manaSymbol.substring(1, manaSymbol.length() - 1).split("/");
+                printColorized("{", GOLDEN);
+
+                for (String splitSymbol : splitSymbols) {
+                    printColorized(splitSymbol, colorCorrespondency.getOrDefault(splitSymbol, SILVER));
+
+                    if (!splitSymbol.equals(splitSymbols[splitSymbols.length - 1]))
+                        printColorized("/", GOLDEN);
+                }
+
+                printColorized("}", GOLDEN);
+            }
 
             //lo colorea de forma correspondiente
             else
