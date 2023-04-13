@@ -12,6 +12,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
+import java.util.InputMismatchException;
 
 import static com.dam.rgb.visual.Colorize.colorCorrespondency;
 import static com.dam.rgb.visual.Style.*;
@@ -29,97 +30,97 @@ public class ArcaneInsight {
             String[] urls = {
                     /* types */
                     //artifact
-                    "https://api.scryfall.com/cards/named?fuzzy=aeon+engine",
+                    "aeon+engine",
                     //battle
-                    "https://api.scryfall.com/cards/named?fuzzy=invasion+ikoria",
+                    "invasion+ikoria",
                     //conspiracy
-                    "https://api.scryfall.com/cards/named?fuzzy=power+play",
+                    "power+play",
                     //creature
-                    "https://api.scryfall.com/cards/named?fuzzy=aboroth",
+                    "aboroth",
                     //emblem
-                    "https://api.scryfall.com/cards/named?fuzzy=chandra+torch+defiance+emblem",
+                    "chandra+torch+defiance+emblem",
                     //enchantment
-                    "https://api.scryfall.com/cards/named?fuzzy=alpine+moon",
+                    "alpine+moon",
                     //hero
-                    "https://api.scryfall.com/cards/named?fuzzy=the+destined",
+                    "the+destined",
                     //instant
-                    "https://api.scryfall.com/cards/named?fuzzy=absorb",
+                    "absorb",
                     //land
-                    "https://api.scryfall.com/cards/named?fuzzy=access+tunel",
+                    "access+tunel",
                     //phenomenon
-                    "https://api.scryfall.com/cards/named?fuzzy=interplanar+tunnel",
+                    "interplanar+tunnel",
                     //plane
-                    "https://api.scryfall.com/cards/named?fuzzy=lethe+lake",
+                    "lethe+lake",
                     //planeswalker
-                    "https://api.scryfall.com/cards/named?fuzzy=ajani+sleeper+agent",
+                    "ajani+sleeper+agent",
                     //scheme
-                    "https://api.scryfall.com/cards/named?fuzzy=choose+demise",
+                    "choose+demise",
                     //vanguard
-                    "https://api.scryfall.com/cards/named?fuzzy=maraxus",
+                    "maraxus",
 
                     /* supertypes */
                     //basic
-                    "https://api.scryfall.com/cards/named?fuzzy=island",
+                    "island",
                     //legendary
-                    "https://api.scryfall.com/cards/named?fuzzy=adamaro+first+desire",
+                    "adamaro+first+desire",
                     //token
-                    "https://api.scryfall.com/cards/named?fuzzy=bat",
+                    "bat",
 
                     /* subtypes */
                     //attraction
-                    "https://api.scryfall.com/cards/named?fuzzy=bumper+cars",
+                    "bumper+cars",
                     //contraption
-                    "https://api.scryfall.com/cards/named?fuzzy=accesories+murder",
+                    "accesories+murder",
                     //equipment
-                    "https://api.scryfall.com/cards/named?fuzzy=ancestral+katana",
+                    "ancestral+katana",
                     //gold
-                    "https://api.scryfall.com/cards/named?fuzzy=gold",
+                    "gold",
                     //class
-                    "https://api.scryfall.com/cards/named?fuzzy=bard+class",
+                    "bard+class",
                     //saga
-                    "https://api.scryfall.com/cards/named?fuzzy=elspeth+nightmare",
+                    "elspeth+nightmare",
                     //adventure
-                    "https://api.scryfall.com/cards/named?fuzzy=crystal+dragon",
+                    "crystal+dragon",
 
                     /* unique */
                     //two faced
-                    "https://api.scryfall.com/cards/named?fuzzy=befriending+moths",
+                    "befriending+moths",
                     //nightbound
-                    "https://api.scryfall.com/cards/named?fuzzy=child+pack",
+                    "child+pack",
                     //meld
-                    "https://api.scryfall.com/cards/named?fuzzy=gisela+broken+blade",
-                    "https://api.scryfall.com/cards/named?fuzzy=brisela+voice+nightmares",
+                    "gisela+broken+blade",
+                    "brisela+voice+nightmares",
                     //leveler
-                    "https://api.scryfall.com/cards/named?fuzzy=echo+mage",
+                    "echo+mage",
                     //split
-                    "https://api.scryfall.com/cards/named?fuzzy=odds+ends",
+                    "odds+ends",
                     //split with fuse
-                    "https://api.scryfall.com/cards/named?fuzzy=breaking+entering",
+                    "breaking+entering",
                     //split with aftermath
-                    "https://api.scryfall.com/cards/named?fuzzy=rags+riches",
+                    "rags+riches",
                     //flip
-                    "https://api.scryfall.com/cards/named?fuzzy=akki+lavarunner",
+                    "akki+lavarunner",
                     //prototype
-                    "https://api.scryfall.com/cards/named?fuzzy=fallaji+dragon+engine",
+                    "fallaji+dragon+engine",
                     //host
-                    "https://api.scryfall.com/cards/named?fuzzy=labro+bot",
+                    "labro+bot",
                     //augment
-                    "https://api.scryfall.com/cards/named?fuzzy=half+squirrel",
+                    "half+squirrel",
                     //dungeon
-                    "https://api.scryfall.com/cards/named?fuzzy=dungeon+mad+mage",
+                    "dungeon+mad+mage",
 
                     /* conflictive */
-                    "https://api.scryfall.com/cards/named?fuzzy=asmora",
-                    "https://api.scryfall.com/cards/named?fuzzy=okina+temple",
-                    "https://api.scryfall.com/cards/named?fuzzy=amphin+cutt",
-                    "https://api.scryfall.com/cards/named?fuzzy=dance+dead",
+                    "asmora",
+                    "okina+temple",
+                    "amphin+cutt",
+                    "dance+dead",
             };
 
             HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1)
                     .followRedirects(HttpClient.Redirect.NORMAL).build();
 
             for (String url : urls) {
-                HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create(url))
+                HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("https://api.scryfall.com/cards/named?fuzzy=" + url))
                         .headers("Accept", "application/json").setHeader("User-Agent", "Mozilla/5.0").build();
 
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -134,74 +135,96 @@ public class ArcaneInsight {
         }
     }
 
-
-    public static void printCard(JSONObject json) throws JSONException {
-
-        JSONObject card = json;
-
-        for (int i = 0; i < 2; i++) {
-            if (json.has("card_faces"))
-                card = json.getJSONArray("card_faces").getJSONObject(i);
-
+    public static void printCard(JSONObject json) {
+        try {
             Colors colorIdentity = chooseColor(json.getJSONArray("color_identity"));
 
-            //imagen
-            /* if (card.has("image_uris")) {
-                if (card.getJSONObject("image_uris").has("art_crop"))
-                    PixelArt.printPixel(card.getJSONObject("image_uris").getString("art_crop"), 3);
-            } else if (json.has("image_uris")) {
-                if (json.getJSONObject("image_uris").has("art_crop"))
-                    PixelArt.printPixel(json.getJSONObject("image_uris").getString("art_crop"), 3);
-            } */
+            if (json.has("card_faces")) {
+                JSONArray cardFaces = json.getJSONArray("card_faces");
 
-            printBorder(TOP, colorIdentity);
+                for (int i = 0; i < 2; i++) {
+                    JSONObject card = cardFaces.getJSONObject(i);
+                    printCardFace(json, card, colorIdentity);
+                }
 
-            //basic info
-            if (card.has("name") && card.has("mana_cost"))
-                printJustified(card.getString("name"), card.getString("mana_cost"), colorIdentity);
-            if (card.has("type_line"))
-                printJustified(card.getString("type_line"), "", colorIdentity);
+            } else
+                printCardFace(json, json, colorIdentity);
 
-            printBorder(CENTER, colorIdentity);
-
-            //text
-            if (card.has("oracle_text"))
-                squishText(card.getString("oracle_text"), colorIdentity);
-            if (card.has("flavor_text"))
-                squishText(card.getString("flavor_text"), colorIdentity);
-
-            //extras
-            if (card.has("power") && card.has("toughness"))
-                printJustified("", card.getString("power") + " / "
-                        + card.getString("toughness"), colorIdentity);
-            if (card.has("defense"))
-                printJustified("", card.getString("defense"), colorIdentity);
-            if (card.has("loyalty"))
-                printJustified("", card.getString("loyalty"), colorIdentity);
-            if (card.has("attraction_lights"))
-                System.out.println(card.getJSONArray("attraction_lights"));
-            if (card.has("hand_modifier") && card.has("life_modifier"))
-                System.out.println(card.getString("hand_modifier") + " / " + card.getString("life_modifier"));
-
-            printBorder(CENTER, colorIdentity);
-
-            //bottom info
-            if (json.has("rarity") && json.has("collector_number") && json.has("released_at"))
-                printJustified(json.getString("rarity").toUpperCase().charAt(0) + " "
-                        + json.getString("collector_number"), "™ & © "
-                        + LocalDate.parse(json.getString("released_at")).getYear()
-                        + " Wizards of the Coast", colorIdentity);
-            if (json.has("set") && json.has("foil") && json.has("lang") && json.has("artist"))
-                printJustified(json.getString("set").toUpperCase() + " "
-                        + foilSymbol(Boolean.parseBoolean(json.getString("foil"))) + " "
-                        + json.getString("lang").toUpperCase() + " — "
-                        + json.getString("artist"), "", colorIdentity);
-
-            printBorder(BOTTOM, colorIdentity);
-
-            if (!json.has("card_faces"))
-                break;
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
+    }
+
+    private static void printCardFace(JSONObject json, JSONObject card, Colors colorIdentity) {
+
+        //imagen
+        /* if (card.has("image_uris")) {
+            if (card.getJSONObject("image_uris").has("art_crop"))
+                PixelArt.printPixel(card.getJSONObject("image_uris").getString("art_crop"), 3);
+        } else if (json.has("image_uris")) {
+            if (json.getJSONObject("image_uris").has("art_crop"))
+                PixelArt.printPixel(json.getJSONObject("image_uris").getString("art_crop"), 3);
+        } */
+        
+        printBorder(TOP, colorIdentity);
+
+        //basic info
+        printJustified(card.optString("name"), card.optString("mana_cost"), colorIdentity);
+        printJustified(card.optString("type_line"), "", colorIdentity);
+
+        printBorder(CENTER, colorIdentity);
+
+        //text
+        squishText(card.optString("oracle_text"), colorIdentity);
+        squishText(card.optString("flavor_text"), colorIdentity);
+
+        //extras
+        String power = card.optString("power");
+        String toughness = card.optString("toughness");
+        String defense = card.optString("defense");
+        String loyalty = card.optString("loyalty");
+
+        if (!power.isEmpty() && !toughness.isEmpty())
+            printJustified("", power + " / " + toughness, colorIdentity);
+        else if (!defense.isEmpty())
+            printJustified("", defense, colorIdentity);
+        else if (!loyalty.isEmpty())
+            printJustified("", loyalty, colorIdentity);
+
+        String attractionLights = card.optString("attraction_lights");
+        String handModifier = card.optString("hand_modifier");
+        String lifeModifier = card.optString("life_modifier");
+
+        if (!attractionLights.isEmpty())
+            printJustified("", attractionLights, colorIdentity);
+        if (!handModifier.isEmpty() && !lifeModifier.isEmpty())
+            printJustified("", handModifier + " / " + lifeModifier, colorIdentity);
+
+        printBorder(CENTER, colorIdentity);
+
+        //bottom info
+        String rarity = json.optString("rarity");
+        String collectorNumber = json.optString("collector_number");
+        String releasedAt = json.optString("released_at");
+
+        if (!rarity.isEmpty() && !collectorNumber.isEmpty() && !releasedAt.isEmpty()) {
+            int year = LocalDate.parse(releasedAt).getYear();
+            String collectorInfo = rarity.toUpperCase().charAt(0) + " " + collectorNumber;
+            String copyright = "™ & © " + year + " Wizards of the Coast";
+            printJustified(collectorInfo, copyright, colorIdentity);
+        }
+
+        String set = json.optString("set");
+        String foil = json.optString("foil");
+        String lang = json.optString("lang");
+        String artist = json.optString("artist");
+
+        if (!set.isEmpty() && !foil.isEmpty() && !lang.isEmpty() && !artist.isEmpty()) {
+            String setInfo = set.toUpperCase() + " " + (Boolean.parseBoolean(foil) ? "*" : "•") + " " + lang.toUpperCase();
+            printJustified(setInfo + " — " + artist, "", colorIdentity);
+        }
+
+        printBorder(BOTTOM, colorIdentity);
     }
 
 
@@ -237,12 +260,10 @@ public class ArcaneInsight {
     public static void printJustified (String left, String right, Colors color) {
 
         int spaces = (CARD_WIDTH - 4) - left.length() - right.length();
+        String spacing = " ".repeat(spaces);
 
         Colorize.printColorized(VERTICAL_BORDER, color);
-        System.out.print(" " + left);
-
-        for(int i = 0; i < spaces; i++)
-            System.out.print(" ");
+        System.out.print(" " + left + spacing);
 
         //impresion simbolos de mana
         if (right.contains("}")) {
@@ -290,31 +311,30 @@ public class ArcaneInsight {
             return colorCorrespondency.getOrDefault(String.valueOf(colorIdentity.toString().charAt(2)), GOLDEN);
     }
 
-    public static String foilSymbol(boolean foil) {
-        return foil ? "*" : "•";
-    }
-
     public static void colorManaSymbol(String manaCost) {
 
-        //busca el inicio del simbolo de mana
         int i = 0;
         while (i < manaCost.length()) {
-            if (manaCost.charAt(i) == '{') {
-                int end = manaCost.indexOf('}', i + 1);
-                String manaSymbol = manaCost.substring(i, end + 1);
+            int startIndex = manaCost.indexOf('{', i);
+            if (startIndex == -1)
+                break;
 
-                //mana partido
-                if (manaSymbol.contains("/"))
-                    Colorize.printColorized(manaSymbol, GOLDEN);
+            int endIndex = manaCost.indexOf('}', startIndex + 1);
+            if (endIndex == -1)
+                break;
 
-                //lo colorea de forma correspondiente
-                else
-                    Colorize.printColorized(manaSymbol, colorCorrespondency.getOrDefault(String.valueOf(manaSymbol.charAt(1)), SILVER));
+            //aisla el simbolo de mana
+            String manaSymbol = manaCost.substring(startIndex, endIndex + 1);
 
-                i = end + 1;
+            //mana partido
+            if (manaSymbol.contains("/"))
+                Colorize.printColorized(manaSymbol, GOLDEN);
 
-            } else
-                i++;
+            //lo colorea de forma correspondiente
+            else
+                Colorize.printColorized(manaSymbol, colorCorrespondency.getOrDefault(String.valueOf(manaSymbol.charAt(1)), SILVER));
+
+            i = endIndex + 1;
         }
     }
 }
