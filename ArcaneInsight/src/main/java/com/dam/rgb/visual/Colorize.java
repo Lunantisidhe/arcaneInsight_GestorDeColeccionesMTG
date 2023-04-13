@@ -2,11 +2,21 @@ package com.dam.rgb.visual;
 
 import com.dam.rgb.visual.enums.Colors;
 
+import java.util.Map;
+
 import static com.dam.rgb.visual.enums.Colors.*;
 
 public class Colorize {
     public static int[] white = {255, 255, 255}, blue = {0, 0, 255}, black = {0, 0, 0}, red = {255, 0, 0}, green = {0, 255, 0};
     public static int[] golden = {218, 165, 32}, silver = {187, 187, 187};
+
+    public static Map<String, Colors> colorCorrespondency = Map.of(
+            "W", WHITE,
+            "U", BLUE,
+            "B", BLACK,
+            "R", RED,
+            "G", GREEN
+    );
 
     public static void printColorized(String text, Enum<Colors> color) {
 

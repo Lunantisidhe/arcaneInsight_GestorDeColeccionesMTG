@@ -13,15 +13,14 @@ public class PixelArt {
 
     public static void printPixel(String fileName, int reductionRatio) {
         try {
-
-            //carga la imagen
+            //carga la imagen de una url o un fichero
             BufferedImage sourceImg;
             if (fileName.startsWith("http"))
                 sourceImg = ImageIO.read(new URL(fileName + ".jpg"));
             else
                 sourceImg = ImageIO.read(new File(fileName + ".jpg"));
 
-            //aumenta el tamaño de la imagen
+            //reduce el tamaño de la imagen
             int width = sourceImg.getWidth() / reductionRatio;
             int height = sourceImg.getHeight() / 3 / reductionRatio;
 

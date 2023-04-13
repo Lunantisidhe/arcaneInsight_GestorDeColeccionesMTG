@@ -1,7 +1,9 @@
 package com.dam.rgb;
 
 import com.dam.rgb.visual.Colorize;
+import com.dam.rgb.visual.enums.Colors;
 import com.dam.rgb.visual.enums.Position;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -11,8 +13,10 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
 
+import static com.dam.rgb.visual.Colorize.colorCorrespondency;
 import static com.dam.rgb.visual.Style.*;
-import static com.dam.rgb.visual.enums.Colors.*;
+import static com.dam.rgb.visual.enums.Colors.GOLDEN;
+import static com.dam.rgb.visual.enums.Colors.SILVER;
 import static com.dam.rgb.visual.enums.Position.*;
 
 public class ArcaneInsight {
@@ -139,6 +143,8 @@ public class ArcaneInsight {
             if (json.has("card_faces"))
                 card = json.getJSONArray("card_faces").getJSONObject(i);
 
+            Colors colorIdentity = chooseColor(json.getJSONArray("color_identity"));
+
             //imagen
             /* if (card.has("image_uris")) {
                 if (card.getJSONObject("image_uris").has("art_crop"))
@@ -148,47 +154,50 @@ public class ArcaneInsight {
                     PixelArt.printPixel(json.getJSONObject("image_uris").getString("art_crop"), 3);
             } */
 
-            printBorder(TOP);
+            printBorder(TOP, colorIdentity);
 
             //basic info
             if (card.has("name") && card.has("mana_cost"))
-                printJustified(card.getString("name"), card.getString("mana_cost"));
+                printJustified(card.getString("name"), card.getString("mana_cost"), colorIdentity);
             if (card.has("type_line"))
-                printJustified(card.getString("type_line"), "");
+                printJustified(card.getString("type_line"), "", colorIdentity);
 
-            printBorder(CENTER);
+            printBorder(CENTER, colorIdentity);
 
             //text
             if (card.has("oracle_text"))
-                squishText(card.getString("oracle_text"));
+                squishText(card.getString("oracle_text"), colorIdentity);
             if (card.has("flavor_text"))
-                squishText(card.getString("flavor_text"));
+                squishText(card.getString("flavor_text"), colorIdentity);
 
             //extras
             if (card.has("power") && card.has("toughness"))
-                printJustified("", card.getString("power") + " / " + card.getString("toughness"));
+                printJustified("", card.getString("power") + " / "
+                        + card.getString("toughness"), colorIdentity);
             if (card.has("defense"))
-                printJustified("", card.getString("defense"));
+                printJustified("", card.getString("defense"), colorIdentity);
             if (card.has("loyalty"))
-                printJustified("", card.getString("loyalty"));
+                printJustified("", card.getString("loyalty"), colorIdentity);
             if (card.has("attraction_lights"))
                 System.out.println(card.getJSONArray("attraction_lights"));
             if (card.has("hand_modifier") && card.has("life_modifier"))
                 System.out.println(card.getString("hand_modifier") + " / " + card.getString("life_modifier"));
 
-            printBorder(CENTER);
+            printBorder(CENTER, colorIdentity);
 
             //bottom info
             if (json.has("rarity") && json.has("collector_number") && json.has("released_at"))
                 printJustified(json.getString("rarity").toUpperCase().charAt(0) + " "
                         + json.getString("collector_number"), "™ & © "
-                        + LocalDate.parse(json.getString("released_at")).getYear() + " Wizards of the Coast");
+                        + LocalDate.parse(json.getString("released_at")).getYear()
+                        + " Wizards of the Coast", colorIdentity);
             if (json.has("set") && json.has("foil") && json.has("lang") && json.has("artist"))
                 printJustified(json.getString("set").toUpperCase() + " "
                         + foilSymbol(Boolean.parseBoolean(json.getString("foil"))) + " "
-                        + json.getString("lang").toUpperCase() + " — " + json.getString("artist"), "");
+                        + json.getString("lang").toUpperCase() + " — "
+                        + json.getString("artist"), "", colorIdentity);
 
-            printBorder(BOTTOM);
+            printBorder(BOTTOM, colorIdentity);
 
             if (!json.has("card_faces"))
                 break;
@@ -196,32 +205,34 @@ public class ArcaneInsight {
     }
 
 
-    public static void printBorder(Enum<Position> position) {
+    public static void printBorder(Enum<Position> position, Colors color) {
+
         if (position == TOP) {
-            System.out.print(TOP_LEFT_CORNER);
+            Colorize.printColorized(TOP_LEFT_CORNER, color);
             for (int i = 0; i < (CARD_WIDTH - 2); i++)
-                System.out.print(HORIZONTAL_BORDER);
-            System.out.println(TOP_RIGHT_CORNER);
+                Colorize.printColorized(HORIZONTAL_BORDER, color);
+            Colorize.printColorized(TOP_RIGHT_CORNER + "\n", color);
 
         } else if (position == CENTER) {
-            System.out.print(CENTER_LEFT_CONNECTOR);
+            Colorize.printColorized(CENTER_LEFT_CONNECTOR, color);
             for (int i = 0; i < (CARD_WIDTH - 2); i++)
-                System.out.print(LIGHT_HORIZONTAL_BORDER);
-            System.out.println(CENTER_RIGHT_CONNECTOR);
+                Colorize.printColorized(LIGHT_HORIZONTAL_BORDER, color);
+            Colorize.printColorized(CENTER_RIGHT_CONNECTOR + "\n", color);
 
         } else if (position == BOTTOM) {
-            System.out.print(BOTTOM_LEFT_CORNER);
+            Colorize.printColorized(BOTTOM_LEFT_CORNER, color);
             for (int i = 0; i < (CARD_WIDTH - 2); i++)
-                System.out.print(HORIZONTAL_BORDER);
-            System.out.println(BOTTOM_RIGHT_CORNER);
+                Colorize.printColorized(HORIZONTAL_BORDER, color);
+            Colorize.printColorized(BOTTOM_RIGHT_CORNER + "\n", color);
         }
     }
 
-    public static void printJustified (String left, String right) {
+    public static void printJustified (String left, String right, Colors color) {
 
         int spaces = (CARD_WIDTH - 4) - left.length() - right.length();
 
-        System.out.print(VERTICAL_BORDER + " " + left);
+        Colorize.printColorized(VERTICAL_BORDER, color);
+        System.out.print(" " + left);
 
         for(int i = 0; i < spaces; i++)
             System.out.print(" ");
@@ -229,13 +240,15 @@ public class ArcaneInsight {
         //impresion simbolos de mana
         if (right.contains("}")) {
             colorManaSymbol(right);
-            System.out.println(" " + VERTICAL_BORDER);
+            Colorize.printColorized(" " + VERTICAL_BORDER + "\n", color);
 
-        } else
-            System.out.println(right + " " + VERTICAL_BORDER);
+        } else {
+            System.out.print(right + " ");
+            Colorize.printColorized(VERTICAL_BORDER + "\n", color);
+        }
     }
 
-    public static void squishText(String textBlock) {
+    public static void squishText(String textBlock, Colors color) {
 
         String[] splitText = textBlock.split("\n");
 
@@ -255,10 +268,19 @@ public class ArcaneInsight {
                         end = start + lastSpace;
                 }
 
-                printJustified(text.substring(start, end).trim(), "");
+                printJustified(text.substring(start, end).trim(), "", color);
                 start = end;
             }
         }
+    }
+
+    public static Colors chooseColor(JSONArray colorIdentity) {
+
+        if (colorIdentity.toString().equals("[]"))
+            return SILVER;
+
+        else
+            return colorCorrespondency.getOrDefault(String.valueOf(colorIdentity.toString().charAt(2)), GOLDEN);
     }
 
     public static String foilSymbol(boolean foil) {
@@ -278,17 +300,10 @@ public class ArcaneInsight {
                 if (manaSymbol.contains("/"))
                     Colorize.printColorized(manaSymbol, GOLDEN);
 
-                else {
-                    //lo colorea de forma correspondiente
-                    switch (manaSymbol) {
-                        case "{W}" -> Colorize.printColorized(manaSymbol, WHITE);
-                        case "{U}" -> Colorize.printColorized(manaSymbol, BLUE);
-                        case "{B}" -> Colorize.printColorized(manaSymbol, BLACK);
-                        case "{R}" -> Colorize.printColorized(manaSymbol, RED);
-                        case "{G}" -> Colorize.printColorized(manaSymbol, GREEN);
-                        default -> Colorize.printColorized(manaSymbol, SILVER);
-                    }
-                }
+                //lo colorea de forma correspondiente
+                else
+                    Colorize.printColorized(manaSymbol, colorCorrespondency.getOrDefault(String.valueOf(manaSymbol.charAt(1)), SILVER));
+
                 i = end + 1;
 
             } else
