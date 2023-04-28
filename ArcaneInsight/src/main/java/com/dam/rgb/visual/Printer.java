@@ -14,12 +14,14 @@ import static com.dam.rgb.visual.enums.Position.*;
 
 public class Printer {
 
+    public static final int CARD_WIDTH = 60;
+
     public static void printCard(JSONObject json) {
         try {
-            // pick color identity
+            // elige los colores segun la identidad de color
             Colors[] colorIdentity = Colorizer.chooseColor(json.getJSONArray("color_identity"));
 
-            // print two faced cards
+            // imprime cartas de doble cara
             if (!json.optString("card_faces").isEmpty()) {
                 JSONArray cardFaces = json.getJSONArray("card_faces");
 
@@ -29,7 +31,7 @@ public class Printer {
                     printCardFace(json, card, colorIdentity, (i == 0 ? BorderType.TOP_HALF : BorderType.BOTTOM_HALF));
                 }
 
-            // print mono faced cards
+            // imprime cartas de una sola cara
             } else {
                 // printCardArt(json, json);
                 printCardFace(json, json, colorIdentity, BorderType.COMPLETE);
@@ -40,6 +42,7 @@ public class Printer {
         }
     }
 
+    // imprime el arte de una carta
     private static void printCardArt(JSONObject json, JSONObject card) {
         try {
             String artCrop = !card.optString("image_uris").isEmpty()
@@ -53,18 +56,19 @@ public class Printer {
         }
     }
 
+    // imprime una cara de una carta
     private static void printCardFace(JSONObject json, JSONObject card, Colors[] colorIdentity, BorderType borderType) {
 
         if (borderType != BorderType.BOTTOM_HALF)
             printBorder(TOP, colorIdentity);
 
-        // basic info
+        // informacion basica
         printJustified(card.optString("name"), card.optString("mana_cost"), colorIdentity, false);
         printJustified(card.optString("type_line"), "", colorIdentity, false);
 
         printBorder(CENTER, colorIdentity);
 
-        // text
+        // textos
         squishText(card.optString("oracle_text"), colorIdentity, false);
         if (!card.optString("oracle_text").isEmpty() && !card.optString("flavor_text").isEmpty())
             printJustified("", "", colorIdentity, false);
@@ -88,16 +92,21 @@ public class Printer {
         String lifeModifier = card.optString("life_modifier");
 
         if (!attractionLights.isEmpty())
-            printJustified("", attractionLights, colorIdentity, false);
-        if (!handModifier.isEmpty() && !lifeModifier.isEmpty())
-            printJustified("", handModifier + " / " + lifeModifier, colorIdentity, false);
+            printJustified("", "Attraction lights "
+                    + attractionLights.replaceAll("[\\[\\]]", "").replace(",", ", "),
+                    colorIdentity, false);
+
+        if (!handModifier.isEmpty() && !lifeModifier.isEmpty()) {
+            printJustified("", "", colorIdentity, false);
+            printJustified("Hand size " + handModifier, "Starting life " + lifeModifier, colorIdentity, false);
+        }
 
         printBorder(CENTER, colorIdentity);
 
-        // bottom info
+        // informacion pie
         if (borderType != BorderType.TOP_HALF) {
             String rarity = json.optString("rarity");
-            String collectorNumber = json.optString("collector_number");
+            String collectorNumber = json.optString("collector_number").replace("★", "*");
             String releasedAt = json.optString("released_at");
 
             if (!rarity.isEmpty() && !collectorNumber.isEmpty() && !releasedAt.isEmpty()) {
@@ -121,6 +130,7 @@ public class Printer {
         }
     }
 
+    // imprime los bordes de la carta en los colores elegidos
     public static void printBorder(Position position, Colors[] colors) {
 
         String left = null, center = null, right = null;
@@ -150,6 +160,7 @@ public class Printer {
 
     }
 
+    // imprime textos justificados a la izquierda/derecha
     public static void printJustified (String left, String right, Colors[] colors, boolean italic) {
 
         int spaces = (CARD_WIDTH - 4) - left.length() - right.length();
@@ -165,6 +176,7 @@ public class Printer {
         Colorizer.printColorized(" " + VERTICAL_BORDER + "\n", colors.length > 1 ? colors[1] : colors[0]);
     }
 
+    // imprime un texto restringiendolo a un numero de caracteres
     public static void squishText(String textBlock, Colors[] colors, boolean italic) {
 
         String[] splitText = textBlock.split("\n");
