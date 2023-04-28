@@ -13,14 +13,14 @@ public class PixelArt {
 
     public static void printPixel(String fileName, int reductionRatio) {
         try {
-            //carga la imagen de una url o un fichero
+            // carga la imagen de una url o un fichero
             BufferedImage sourceImg;
             if (fileName.startsWith("http"))
                 sourceImg = ImageIO.read(new URL(fileName + ".jpg"));
             else
                 sourceImg = ImageIO.read(new File(fileName + ".jpg"));
 
-            //reduce el tamaño de la imagen
+            // reduce el tamaño de la imagen
             int width = sourceImg.getWidth() / reductionRatio;
             int height = sourceImg.getHeight() / 3 / reductionRatio;
 
@@ -30,9 +30,10 @@ public class PixelArt {
             graphics.drawImage(sourceImg, 0, 0, width, height, null);
             graphics.dispose();
 
-            //convierte la imagen a pixeles ascii coloreados
+            // convierte la imagen a pixeles ascii coloreados
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
+
                     //calcula el color del bloque, lo imprime y resetea el color del texto de la consola
                     Color color = new Color(resizedImg.getRGB(x, y));
                     System.out.print("\033[38;2;" + color.getRed() + ";" + color.getGreen() + ";" + color.getBlue()

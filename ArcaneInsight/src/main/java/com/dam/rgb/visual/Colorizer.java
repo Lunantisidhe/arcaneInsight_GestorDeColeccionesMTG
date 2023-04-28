@@ -20,6 +20,7 @@ public class Colorizer {
             "G", GREEN
     );
 
+    // imprime texto en el color seleccionado
     public static void printColorized(String text, Colors color) {
 
         int[] colorValues = new int[3];
@@ -41,59 +42,68 @@ public class Colorizer {
         else if (color.equals(GREY))
             colorValues = grey;
 
-        //imprime el texto en el color correspondiente y resetea el color del texto de la consola
+        // imprime el texto en el color correspondiente y resetea el color del texto de la consola
         System.out.print("\033[38;2;" + colorValues[0] + ";" + colorValues[1] + ";" + colorValues[2] + "m" + text + "\033[0m");
     }
 
+    // a partir de la identidad de color de una carta, devuelve sus colores correspondientes
     public static Colors[] chooseColor(JSONArray colorIdentity) {
 
-        //carta tricolor
-        if (colorIdentity.toString().length() >= 13)
-            return new Colors[]{GOLDEN};
+        // carta incolora
+        if (colorIdentity.toString().equals("[]"))
+            return new Colors[] {
+                    SILVER
+            };
 
-        //carta bicolor
+        // carta tricolor+
+        else if (colorIdentity.toString().length() >= 13)
+            return new Colors[] {
+                    GOLDEN
+            };
+
+        // carta bicolor
         else if (colorIdentity.toString().length() == 9)
-            return new Colors[]{
+            return new Colors[] {
                     colorCorrespondency.getOrDefault(String.valueOf(colorIdentity.toString().charAt(2)), SILVER),
-                    colorCorrespondency.getOrDefault(String.valueOf(colorIdentity.toString().charAt(6)), SILVER)};
+                    colorCorrespondency.getOrDefault(String.valueOf(colorIdentity.toString().charAt(6)), SILVER)
+            };
 
-        //carta incolora
-        else if (colorIdentity.toString().equals("[]"))
-            return new Colors[]{SILVER};
-
-        //carta monocolor
+        // carta monocolor
         else
-            return new Colors[]{colorCorrespondency.getOrDefault(String.valueOf(colorIdentity.toString().charAt(2)), SILVER)};
+            return new Colors[] {
+                    colorCorrespondency.getOrDefault(String.valueOf(colorIdentity.toString().charAt(2)), SILVER)
+            };
     }
 
+    // imprime simbolos de mana coloreados
     public static void printTextWithColoredManaSymbols(String text) {
 
         int i = 0;
         while (i < text.length()) {
             int startIndex = text.indexOf('{', i);
             if (startIndex == -1) {
-                //si no quedan mas simbolos de mana, termina de imprimir el texto
+                // si no quedan mas simbolos de mana, termina de imprimir el texto
                 printColorized(text.substring(i), GREY);
                 break;
             }
 
-            //imprime el texto entre la posicion actual y el simbolo de mana
+            // imprime el texto entre la posicion actual y el simbolo de mana
             if (startIndex > i)
                 printColorized(text.substring(i, startIndex), GREY);
 
             int endIndex = text.indexOf('}', startIndex + 1);
             if (endIndex == -1) {
-                //si no quedan mas simbolos de mana, termina de imprimir el texto
+                // si no quedan mas simbolos de mana, termina de imprimir el texto
                 printColorized(text.substring(i), GREY);
                 break;
             }
 
-            //aisla el simbolo de mana
+            // aisla el simbolo de mana
             String manaSymbol = text.substring(startIndex, endIndex + 1);
 
-            //mana partido
+            // mana partido
             if (manaSymbol.contains("/")) {
-                //separa los simbolos para colorearlos por separado
+                // separa los simbolos para colorearlos por separado
                 String[] splitSymbols = manaSymbol.substring(1, manaSymbol.length() - 1).split("/");
                 printColorized("{", GOLDEN);
 
@@ -107,7 +117,7 @@ public class Colorizer {
                 printColorized("}", GOLDEN);
             }
 
-            //lo colorea de forma correspondiente
+            // lo colorea de forma correspondiente
             else
                 printColorized(manaSymbol, colorCorrespondency.getOrDefault(String.valueOf(manaSymbol.charAt(1)), SILVER));
 

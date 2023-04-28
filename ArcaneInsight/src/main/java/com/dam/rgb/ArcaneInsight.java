@@ -43,9 +43,9 @@ public class ArcaneInsight {
 //                    //planeswalker
                     "ajani+sleeper+agent",
 //                    //scheme
-                    "choose+demise",
+//                    "choose+demise",
 //                    //vanguard
-                    "maraxus",
+//                    "maraxus",
 //
 //                    /* supertypes */
 //                    //basic
@@ -57,7 +57,7 @@ public class ArcaneInsight {
 //
 //                    /* subtypes */
 //                    //attraction
-                    "bumper+cars",
+//                    "bumper+cars",
 //                    //contraption
 //                    "accesories+murder",
 //                    //equipment
