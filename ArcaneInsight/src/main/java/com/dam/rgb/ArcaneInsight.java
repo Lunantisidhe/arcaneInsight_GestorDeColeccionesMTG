@@ -67,13 +67,13 @@ public class ArcaneInsight {
 //                    //class
                     "bard+class",
 //                    //saga
-                    "elspeth+nightmare",
+//                    "elspeth+nightmare",
 //                    //adventure
 //                    "crystal+dragon",
 //
 //                    /* unique */
 //                    //two faced
-                    "befriending+moths",
+//                    "befriending+moths",
 //                    //nightbound
 //                    "child+pack",
 //                    //meld
