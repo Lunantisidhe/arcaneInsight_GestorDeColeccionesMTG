@@ -22,21 +22,22 @@ public class Printer {
 
                 for (int i = 0; i < 2; i++) {
                     JSONObject card = cardFaces.getJSONObject(i);
+                    // printCardArt(json, card);
                     printCardFace(json, card, colorIdentity);
                 }
 
-            } else
+            } else {
+                // printCardArt(json, json);
                 printCardFace(json, json, colorIdentity);
+            }
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    private static void printCardFace(JSONObject json, JSONObject card, Colors[] colorIdentity) {
-
-        //imagen
-        /*try {
+    private static void printCardArt(JSONObject json, JSONObject card) {
+        try {
             String artCrop = !card.optString("image_uris").isEmpty()
                     ? card.getJSONObject("image_uris").optString("art_crop")
                     : !json.optString("image_uris").isEmpty()
@@ -45,7 +46,10 @@ public class Printer {
                 PixelArt.printPixel(artCrop, 3);
         } catch (JSONException e) {
             e.printStackTrace();
-        }*/
+        }
+    }
+
+    private static void printCardFace(JSONObject json, JSONObject card, Colors[] colorIdentity) {
 
         printBorder(TOP, colorIdentity);
 
@@ -102,9 +106,9 @@ public class Printer {
         String lang = json.optString("lang");
         String artist = json.optString("artist");
 
-        if (!set.isEmpty() && !foil.isEmpty() && !lang.isEmpty() && !artist.isEmpty()) {
+        if (!set.isEmpty() && !foil.isEmpty() && !lang.isEmpty()) {
             String setInfo = set.toUpperCase() + " " + (Boolean.parseBoolean(foil) ? "*" : "•") + " " + lang.toUpperCase();
-            printJustified(setInfo + " — " + artist, "", colorIdentity, false);
+            printJustified(setInfo + (!artist.isEmpty() ? " — " + artist : ""), "", colorIdentity, false);
         }
 
         printBorder(BOTTOM, colorIdentity);
