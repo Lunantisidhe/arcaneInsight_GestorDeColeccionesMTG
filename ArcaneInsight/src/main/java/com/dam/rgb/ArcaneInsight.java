@@ -21,7 +21,7 @@ public class ArcaneInsight {
 //                    //artifact
 //                    "aeon+engine",
 //                    //battle
-                    "invasion+ikoria",
+//                    "invasion+ikoria",
 //                    //conspiracy
 //                    "power+play",
 //                    //creature
@@ -95,7 +95,7 @@ public class ArcaneInsight {
 //                    //flip
 //                    "akki+lavarunner",
 //                    //prototype
-                    "fallaji+dragon+engine",
+//                    "fallaji+dragon+engine",
 //                    //host
 //                    "labro+bot",
 //                    //augment
@@ -106,7 +106,7 @@ public class ArcaneInsight {
 //                    /* conflictive */
 //                    "asmora",
 //                    "okina+temple",
-                    "amphin+cutt",
+//                    "amphin+cutt",
 //                    "dance+dead"
             };
 

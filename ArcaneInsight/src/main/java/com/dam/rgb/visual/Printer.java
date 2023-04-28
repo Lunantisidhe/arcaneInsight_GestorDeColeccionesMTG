@@ -180,7 +180,7 @@ public class Printer {
     // imprime un texto restringiendolo a un numero de caracteres
     public static void squishText(JSONObject card, String textBlock, Colors[] colors, boolean italic) {
 
-        String[] cardType = card.optString("type_line").split(" — ");
+        String cardType = card.optString("type_line");
         String[] splitTextArr = textBlock.split("\n");
         ArrayList<String> splitText = new ArrayList<>();
 
@@ -188,21 +188,18 @@ public class Printer {
         for (int i = 0; i < splitTextArr.length; i++) {
             String line = splitTextArr[i];
 
-            if (cardType.length > 1) {
-                // espaciado sagas y clases
-                if ((cardType[1].equals("Saga") && line.startsWith("I"))
-                        || (cardType[1].equals("Class") && line.startsWith("{")))
-                    splitText.add(" ");
-            }
+            // espaciado fases sagas y niveles clases
+            if ((cardType.contains("Saga") && line.startsWith("I"))
+                    || (cardType.contains("Class") && line.startsWith("{")))
+                splitText.add(" ");
 
             splitText.add(line);
 
-            if (cardType.length > 1) {
-                // espaciado clases y planeswalker
-                if ((cardType[1].equals("Class") && line.endsWith(")")
-                        || (cardType[0].equals("Legendary Planeswalker")) && i != splitTextArr.length - 1))
-                    splitText.add(" ");
-            }
+            // espaciado niveles clases, habilidades lealtad planeswalkers y criaturas con prototype
+            if ((cardType.contains("Class") && line.endsWith(")")
+                    || (cardType.contains("Planeswalker")) && i != splitTextArr.length - 1)
+                    || (cardType.contains("Creature") && line.startsWith("Prototype")))
+                splitText.add(" ");
         }
 
         for (String text : splitText) {
