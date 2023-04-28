@@ -21,7 +21,7 @@ public class ArcaneInsight {
 //                    //artifact
 //                    "aeon+engine",
 //                    //battle
-//                    "invasion+ikoria",
+                    "invasion+ikoria",
 //                    //conspiracy
 //                    "power+play",
 //                    //creature
@@ -41,11 +41,11 @@ public class ArcaneInsight {
 //                    //plane
 //                    "lethe+lake",
 //                    //planeswalker
-//                    "ajani+sleeper+agent",
+                    "ajani+sleeper+agent",
 //                    //scheme
-//                    "choose+demise",
+                    "choose+demise",
 //                    //vanguard
-//                    "maraxus",
+                    "maraxus",
 //
 //                    /* supertypes */
 //                    //basic
@@ -57,7 +57,7 @@ public class ArcaneInsight {
 //
 //                    /* subtypes */
 //                    //attraction
-//                    "bumper+cars",
+                    "bumper+cars",
 //                    //contraption
 //                    "accesories+murder",
 //                    //equipment
@@ -65,22 +65,22 @@ public class ArcaneInsight {
 //                    //gold
 //                    "gold",
 //                    //class
-//                    "bard+class",
+                    "bard+class",
 //                    //saga
-//                    "elspeth+nightmare",
+                    "elspeth+nightmare",
 //                    //adventure
 //                    "crystal+dragon",
 //
 //                    /* unique */
 //                    //two faced
-//                    "befriending+moths",
+                    "befriending+moths",
 //                    //nightbound
 //                    "child+pack",
 //                    //meld
 //                    "gisela+broken+blade",
 //                    "brisela+voice+nightmares",
 //                    //leveler
-//                    "echo+mage",
+                    "echo+mage",
 //                    //split
 //                    "odds+ends",
 //                    //split with fuse
@@ -90,7 +90,7 @@ public class ArcaneInsight {
 //                    //flip
 //                    "akki+lavarunner",
 //                    //prototype
-//                    "fallaji+dragon+engine",
+                    "fallaji+dragon+engine",
 //                    //host
 //                    "labro+bot",
 //                    //augment
@@ -101,7 +101,7 @@ public class ArcaneInsight {
 //                    /* conflictive */
 //                    "asmora",
 //                    "okina+temple",
-//                    "amphin+cutt",
+                    "amphin+cutt",
 //                    "dance+dead"
             };
 
@@ -117,7 +117,7 @@ public class ArcaneInsight {
                 JSONObject json = new JSONObject(responseBody);
 
                 Printer.printCard(json);
-                //System.out.println(json.toString(4));
+                // System.out.println(json.toString(4));
             }
         } catch (Exception e) {
             e.printStackTrace();

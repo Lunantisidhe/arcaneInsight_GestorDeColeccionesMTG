@@ -7,7 +7,7 @@ import java.util.Map;
 
 import static com.dam.rgb.visual.enums.Colors.*;
 
-public class Colorize {
+public class Colorizer {
     public static int[] white = {241, 235, 221}, blue = {37, 150, 190}, black = {85,61,125},
                         red = {227, 60, 34}, green = {9, 106, 64};
     public static int[] golden = {217, 173, 61}, silver = {205, 210, 217}, grey = {187, 187, 187};
