@@ -65,7 +65,7 @@ public class ArcaneInsight {
 //                    //gold
 //                    "gold",
 //                    //class
-                    "bard+class",
+//                    "bard+class",
 //                    //saga
 //                    "elspeth+nightmare",
 //                    //adventure

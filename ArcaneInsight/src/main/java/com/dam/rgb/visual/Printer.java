@@ -8,6 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 import static com.dam.rgb.visual.Style.*;
 import static com.dam.rgb.visual.enums.Position.*;
@@ -63,15 +64,15 @@ public class Printer {
             printBorder(TOP, colorIdentity);
 
         // informacion basica
-        printJustified(card, card.optString("name"), card.optString("mana_cost"), colorIdentity, false);
-        printJustified(card, card.optString("type_line"), "", colorIdentity, false);
+        printJustified(card.optString("name"), card.optString("mana_cost"), colorIdentity, false);
+        printJustified(card.optString("type_line"), "", colorIdentity, false);
 
         printBorder(CENTER, colorIdentity);
 
         // textos
         squishText(card, card.optString("oracle_text"), colorIdentity, false);
         if (!card.optString("oracle_text").isEmpty() && !card.optString("flavor_text").isEmpty())
-            printJustified(card, "", "", colorIdentity, false);
+            printJustified("", "", colorIdentity, false);
         squishText(card, card.optString("flavor_text"), colorIdentity, true);
 
         // extras
@@ -81,24 +82,24 @@ public class Printer {
         String loyalty = card.optString("loyalty");
 
         if (!power.isEmpty() && !toughness.isEmpty())
-            printJustified(card, "", power + " / " + toughness, colorIdentity, false);
+            printJustified("", power + " / " + toughness, colorIdentity, false);
         else if (!defense.isEmpty())
-            printJustified(card, "", defense, colorIdentity, false);
+            printJustified("", defense, colorIdentity, false);
         else if (!loyalty.isEmpty())
-            printJustified(card, "", loyalty, colorIdentity, false);
+            printJustified("", loyalty, colorIdentity, false);
 
         String attractionLights = card.optString("attraction_lights");
         String handModifier = card.optString("hand_modifier");
         String lifeModifier = card.optString("life_modifier");
 
         if (!attractionLights.isEmpty())
-            printJustified(card, "", "Attraction lights "
+            printJustified("", "Attraction lights "
                     + attractionLights.replaceAll("[\\[\\]]", "").replace(",", ", "),
                     colorIdentity, false);
 
         if (!handModifier.isEmpty() && !lifeModifier.isEmpty()) {
-            printJustified(card, "", "", colorIdentity, false);
-            printJustified(card, "Hand size " + handModifier, "Starting life " + lifeModifier, colorIdentity, false);
+            printJustified("", "", colorIdentity, false);
+            printJustified("Hand size " + handModifier, "Starting life " + lifeModifier, colorIdentity, false);
         }
 
         printBorder(CENTER, colorIdentity);
@@ -113,7 +114,7 @@ public class Printer {
                 int year = LocalDate.parse(releasedAt).getYear();
                 String collectorInfo = rarity.toUpperCase().charAt(0) + " " + collectorNumber;
                 String copyright = "™ & © " + year + " Wizards of the Coast";
-                printJustified(card, collectorInfo, copyright, colorIdentity, false);
+                printJustified(collectorInfo, copyright, colorIdentity, false);
             }
 
             String set = json.optString("set");
@@ -123,7 +124,7 @@ public class Printer {
 
             if (!set.isEmpty() && !foil.isEmpty() && !lang.isEmpty()) {
                 String setInfo = set.toUpperCase() + " " + (Boolean.parseBoolean(foil) ? "*" : "•") + " " + lang.toUpperCase();
-                printJustified(card, setInfo + (!artist.isEmpty() ? " — " + artist : ""), "", colorIdentity, false);
+                printJustified(setInfo + (!artist.isEmpty() ? " — " + artist : ""), "", colorIdentity, false);
             }
 
             printBorder(BOTTOM, colorIdentity);
@@ -161,11 +162,7 @@ public class Printer {
     }
 
     // imprime textos justificados a la izquierda/derecha
-    public static void printJustified(JSONObject card, String left, String right, Colors[] colors, boolean italic) {
-
-        // espaciado fases saga
-        if (card.optString("type_line").equals("Enchantment — Saga") && left.startsWith("I"))
-            printJustified(card, "", "", colors, italic);
+    public static void printJustified(String left, String right, Colors[] colors, boolean italic) {
 
         int spaces = (CARD_WIDTH - 4) - left.length() - right.length();
         String spacing = " ".repeat(spaces);
@@ -183,7 +180,27 @@ public class Printer {
     // imprime un texto restringiendolo a un numero de caracteres
     public static void squishText(JSONObject card, String textBlock, Colors[] colors, boolean italic) {
 
-        String[] splitText = textBlock.split("\n");
+        String[] cardType = card.optString("type_line").split(" — ");
+        String[] splitTextArr = textBlock.split("\n");
+        ArrayList<String> splitText = new ArrayList<>();
+
+        // añadido espaciados
+        for (String line : splitTextArr) {
+            if (cardType.length > 1) {
+                // espaciado sagas y clases
+                if ((cardType[1].equals("Saga") && line.startsWith("I"))
+                        || (cardType[1].equals("Class") && line.startsWith("{")))
+                    splitText.add(" ");
+            }
+
+            splitText.add(line);
+
+            if (cardType.length > 1) {
+                // espaciado clases
+                if (cardType[1].equals("Class") && line.endsWith(")"))
+                    splitText.add(" ");
+            }
+        }
 
         for (String text : splitText) {
             int start = 0, end = 0;
@@ -201,7 +218,7 @@ public class Printer {
                         end = start + lastSpace;
                 }
 
-                printJustified(card, text.substring(start, end).trim(), "", colors, italic);
+                printJustified(text.substring(start, end).trim(), "", colors, italic);
                 start = end;
             }
         }
