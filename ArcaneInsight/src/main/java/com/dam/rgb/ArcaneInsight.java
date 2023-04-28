@@ -41,7 +41,12 @@ public class ArcaneInsight {
 //                    //plane
 //                    "lethe+lake",
 //                    //planeswalker
-                    "ajani+sleeper+agent",
+//                    "garruk+primal",
+//                    "ajani+sleeper+agent",
+//                    "daretti+scrap",
+//                    "elspeth+nemesis",
+//                    "elminster",
+//                    "comet+pup",
 //                    //scheme
 //                    "choose+demise",
 //                    //vanguard

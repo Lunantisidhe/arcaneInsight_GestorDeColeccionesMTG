@@ -185,7 +185,9 @@ public class Printer {
         ArrayList<String> splitText = new ArrayList<>();
 
         // añadido espaciados
-        for (String line : splitTextArr) {
+        for (int i = 0; i < splitTextArr.length; i++) {
+            String line = splitTextArr[i];
+
             if (cardType.length > 1) {
                 // espaciado sagas y clases
                 if ((cardType[1].equals("Saga") && line.startsWith("I"))
@@ -196,8 +198,9 @@ public class Printer {
             splitText.add(line);
 
             if (cardType.length > 1) {
-                // espaciado clases
-                if (cardType[1].equals("Class") && line.endsWith(")"))
+                // espaciado clases y planeswalker
+                if ((cardType[1].equals("Class") && line.endsWith(")")
+                        || (cardType[0].equals("Legendary Planeswalker")) && i != splitTextArr.length - 1))
                     splitText.add(" ");
             }
         }
