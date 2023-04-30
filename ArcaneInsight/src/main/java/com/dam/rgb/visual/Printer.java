@@ -82,7 +82,8 @@ public class Printer {
         String loyalty = card.optString("loyalty");
 
         if (!power.isEmpty() && !toughness.isEmpty())
-            printJustified("", power + " / " + toughness, colorIdentity, false);
+            if (!card.optString("oracle_text").contains("Level up"))
+                printJustified("", power + " / " + toughness, colorIdentity, false);
         else if (!defense.isEmpty())
             printJustified("", defense, colorIdentity, false);
         else if (!loyalty.isEmpty())
@@ -183,26 +184,40 @@ public class Printer {
         String cardType = card.optString("type_line");
         String[] splitTextArr = textBlock.split("\n");
         ArrayList<String> splitText = new ArrayList<>();
+        ArrayList<String> levelUpStats = new ArrayList<>();
+        int levelUpCount = 0;
 
         // añadido espaciados
         for (int i = 0; i < splitTextArr.length; i++) {
             String line = splitTextArr[i];
 
-            // espaciado fases sagas y niveles clases
-            if ((cardType.contains("Saga") && line.startsWith("I"))
-                    || (cardType.contains("Class") && line.startsWith("{")))
+            // espaciado fases sagas, habilidades lealtad planeswalkers, niveles clases y habitaciones dungeons
+            if (
+                    (cardType.contains("Saga") && line.startsWith("I")) ||
+                    (cardType.contains("Planeswalker") && i != 0) ||
+                    (cardType.contains("Class") && line.startsWith("{")) ||
+                    (cardType.contains("Dungeon") && i != 0) ||
+                    (cardType.contains("Creature") && line.startsWith("LEVEL")))
                 splitText.add(" ");
 
-            splitText.add(line);
+            // fuerza y resistencia criaturas con level up
+            if (cardType.contains("Creature") && splitTextArr[0].startsWith("Level up") && i != 0
+                    && splitTextArr[i - 1].startsWith("LEVEL"))
+                levelUpStats.add(line.replace("/", " / "));
+            else
+                splitText.add(line);
 
-            // espaciado niveles clases, habilidades lealtad planeswalkers y criaturas con prototype
-            if ((cardType.contains("Class") && line.endsWith(")")
-                    || (cardType.contains("Planeswalker")) && i != splitTextArr.length - 1)
-                    || (cardType.contains("Creature") && line.startsWith("Prototype")))
+            // espaciado niveles clases y criaturas con prototype
+            if (
+                    (cardType.contains("Class") && line.endsWith(")")) ||
+                    (cardType.contains("Creature") && line.startsWith("Prototype")))
                 splitText.add(" ");
         }
 
-        for (String text : splitText) {
+
+        for (int i = 0; i < splitText.size(); i++) {
+
+            String text = splitText.get(i);
             int start = 0, end = 0;
 
             // calcula mientras no se termine el texto
@@ -218,7 +233,24 @@ public class Printer {
                         end = start + lastSpace;
                 }
 
-                printJustified(text.substring(start, end).trim(), "", colors, italic);
+
+                // impresion
+                String trim = text.substring(start, end).trim();
+
+                // fuerza y resistencia iniciales en cartas con level up
+                if (i == 0 && end >= text.length() && splitText.get(i + 2).startsWith("LEVEL"))
+                    printJustified(trim, card.optString("power") + " / " + card.optString("toughness"),
+                            colors, italic);
+
+                // fuerza y resistencia segun niveles en cartas con level up
+                else if (trim.startsWith("LEVEL")) {
+                    printJustified(trim, levelUpStats.get(levelUpCount), colors, italic);
+                    levelUpCount++;
+
+                // impresion regular
+                } else
+                    printJustified(trim, "", colors, italic);
+
                 start = end;
             }
         }

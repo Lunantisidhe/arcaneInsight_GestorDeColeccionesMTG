@@ -86,6 +86,7 @@ public class ArcaneInsight {
 //                    "brisela+voice+nightmares",
 //                    //leveler
                     "echo+mage",
+                    "lighthouse+chrono",
 //                    //split
 //                    "odds+ends",
 //                    //split with fuse
@@ -101,7 +102,7 @@ public class ArcaneInsight {
 //                    //augment
 //                    "half+squirrel",
 //                    //dungeon
-                    "dungeon+mad+mage",
+//                    "dungeon+mad+mage",
 //
 //                    /* conflictive */
 //                    "asmora",
