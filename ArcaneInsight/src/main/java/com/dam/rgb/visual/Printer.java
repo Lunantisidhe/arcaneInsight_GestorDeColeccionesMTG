@@ -237,13 +237,14 @@ public class Printer {
                 // impresion
                 String trim = text.substring(start, end).trim();
 
-                // fuerza y resistencia iniciales en cartas con level up
-                if (i == 0 && end >= text.length() && splitText.get(i + 2).startsWith("LEVEL"))
+                // fuerza y resistencia iniciales en criaturas con level up
+                if (splitText.get(0).startsWith("Level up") && i == 0 && end >= text.length()
+                        && splitText.get(i + 2).startsWith("LEVEL"))
                     printJustified(trim, card.optString("power") + " / " + card.optString("toughness"),
                             colors, italic);
 
-                // fuerza y resistencia segun niveles en cartas con level up
-                else if (trim.startsWith("LEVEL")) {
+                // fuerza y resistencia segun niveles en criaturas con level up
+                else if (splitText.get(0).startsWith("Level up") && trim.startsWith("LEVEL")) {
                     printJustified(trim, levelUpStats.get(levelUpCount), colors, italic);
                     levelUpCount++;
 
