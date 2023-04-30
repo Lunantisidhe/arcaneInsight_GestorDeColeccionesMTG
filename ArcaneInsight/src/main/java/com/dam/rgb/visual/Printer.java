@@ -81,10 +81,10 @@ public class Printer {
         String defense = card.optString("defense");
         String loyalty = card.optString("loyalty");
 
-        if (!power.isEmpty() && !toughness.isEmpty())
+        if (!power.isEmpty() && !toughness.isEmpty()) {
             if (!card.optString("oracle_text").contains("Level up"))
                 printJustified("", power + " / " + toughness, colorIdentity, false);
-        else if (!defense.isEmpty())
+        } else if (!defense.isEmpty())
             printJustified("", defense, colorIdentity, false);
         else if (!loyalty.isEmpty())
             printJustified("", loyalty, colorIdentity, false);
