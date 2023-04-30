@@ -59,6 +59,7 @@ public class ArcaneInsight {
                     "adamaro+first+desire",
                     //token
                     "bat",
+                    "ape",
 
                     /* subtypes */
                     //attraction
