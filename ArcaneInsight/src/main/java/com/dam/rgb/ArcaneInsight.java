@@ -1,5 +1,6 @@
 package com.dam.rgb;
 
+import com.dam.rgb.db.BulkDefaultCardsImporter;
 import com.dam.rgb.db.DBManager;
 import com.dam.rgb.db.JSONManager;
 import com.dam.rgb.visual.Printer;
@@ -111,14 +112,17 @@ public class ArcaneInsight {
 
             for (String url : urls) {
 
-                JSONObject json = JSONManager.requestJson(url);
+                JSONObject jsonObj = JSONManager.requestCardJson(url);
 
-                if (json != null) {
-                    DBManager.createCard(json);
-                    Printer.printCard(json);
+                if (jsonObj != null) {
+                    DBManager.createCard(jsonObj, "collection");
+                    Printer.printCard(jsonObj);
                 }
                 // System.out.println(json.toString(4));
             }
+
+            BulkDefaultCardsImporter.importAllDefaultCards();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
