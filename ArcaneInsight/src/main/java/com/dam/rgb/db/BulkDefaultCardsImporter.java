@@ -12,8 +12,53 @@ import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class BulkDefaultCardsImporter {
+
+    // comprueba que la base de datos este al dia, si no lo esta la reimporta
+    public static void checkUpdate() {
+
+        JSONObject allCardsJsonObj = requestAllCardsData();
+        if (allCardsJsonObj == null || allCardsJsonObj.isEmpty())
+            return;
+
+        JSONArray jsonDataArray = allCardsJsonObj.getJSONArray("data");
+
+        for (int i = 0; i < jsonDataArray.length(); i++) {
+
+            JSONObject jsonObj = (JSONObject) jsonDataArray.get(i);
+            if (jsonObj.get("type").toString().equals("default_cards")) {
+
+                String update = jsonObj.get("updated_at").toString().split("\\+")[0];
+                DateTimeFormatter formatterIso = DateTimeFormatter.ISO_DATE_TIME;
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM yyyy HH:mm");
+
+                LocalDateTime updateDate = LocalDateTime.parse(update, formatterIso);
+                LocalDateTime today = LocalDateTime.now();
+
+                System.out.println("Comprobando la versión de la base de datos...");
+
+                // base de datos no actualizada
+                if (updateDate.isAfter(today)) {
+
+                    System.out.println("Se ha encontrado una versión más reciente de la base de datos ("
+                            + updateDate.format(formatter) + ").");
+
+                    System.out.println("Actualizando base de datos...");
+                    importAllDefaultCards(allCardsJsonObj);
+                    System.out.println("Se ha actualizado la base de datos a la versión más reciente.");
+
+                // base de datos actualizada
+                } else
+                    System.out.println("La base de datos está actualizada (versión del "
+                            + updateDate.format(formatter) + ").");
+
+                break;
+            }
+        }
+    }
 
     // hace una httprequest para recuperar el json con los datos de todas las cartas
     public static JSONObject requestAllCardsData() {
@@ -38,9 +83,15 @@ public class BulkDefaultCardsImporter {
         return null;
     }
 
-    public static void importAllDefaultCards(){
+    // importa todas las cartas a la base de datos
+    public static void importAllDefaultCards(JSONObject allCardsJsonObj){
 
-        JSONObject allCardsJsonObj = requestAllCardsData();
+        // si existe la base de datos, la elimina
+        Connection connection = new Connection("allCards");
+        connection.getCollection().drop();
+        connection.close();
+
+
         if (allCardsJsonObj == null || allCardsJsonObj.isEmpty())
             return;
         JSONArray jsonDataArray = allCardsJsonObj.getJSONArray("data");

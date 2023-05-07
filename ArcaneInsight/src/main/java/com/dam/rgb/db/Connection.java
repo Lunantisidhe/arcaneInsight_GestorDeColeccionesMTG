@@ -12,6 +12,7 @@ public class Connection {
     MongoDatabase database;
     MongoCollection<Document> collection;
 
+    // representa una conexion con la base de datos
     public Connection(String collectionName) {
 
         client = MongoClients.create();
