@@ -18,6 +18,7 @@
 
   <dependencies>
 
+    <!-- dependencias json -->
     <!-- https://mvnrepository.com/artifact/org.json/json -->
     <dependency>
       <groupId>org.json</groupId>
@@ -32,6 +33,7 @@
       <version>2.10.1</version>
     </dependency>
 
+    <!-- dependencias bd -->
     <!-- https://mvnrepository.com/artifact/org.mongodb/mongodb-driver-sync -->
     <dependency>
       <groupId>org.mongodb</groupId>
@@ -39,6 +41,14 @@
       <version>4.9.1</version>
     </dependency>
 
+    <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>2.0.7</version>
+    </dependency>
+
+    <!-- dependencias testing -->
     <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
@@ -47,6 +57,7 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- dependencias busquedas -->
     <!-- https://mvnrepository.com/artifact/me.xdrop/fuzzywuzzy -->
     <dependency>
       <groupId>me.xdrop</groupId>
