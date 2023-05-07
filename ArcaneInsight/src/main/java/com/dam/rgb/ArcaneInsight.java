@@ -1,11 +1,10 @@
 package com.dam.rgb;
 
-import com.dam.rgb.db.BulkDefaultCardsImporter;
 import com.dam.rgb.db.DBManager;
-import com.dam.rgb.db.JSONManager;
-import com.dam.rgb.visual.Printer;
 import com.dam.rgb.visual.Style;
-import org.json.JSONObject;
+import org.bson.Document;
+
+import java.util.List;
 
 public class ArcaneInsight {
 
@@ -110,18 +109,14 @@ public class ArcaneInsight {
                     "dance+dead"
             };
 
-            for (String url : urls) {
+            /* * * */
 
-                JSONObject jsonObj = JSONManager.requestCardJson(url);
-
-                if (jsonObj != null) {
-                    DBManager.createCard(jsonObj, "collection");
-                    Printer.printCard(jsonObj);
-                }
-                // System.out.println(json.toString(4));
+            List<Document> query = DBManager.searchFuzzyCards("asmora", "name", "allCards", true);
+            for (Document result : query) {
+                System.out.println(result.toJson());
             }
 
-            BulkDefaultCardsImporter.importAllDefaultCards();
+            /* * * */
 
         } catch (Exception e) {
             e.printStackTrace();

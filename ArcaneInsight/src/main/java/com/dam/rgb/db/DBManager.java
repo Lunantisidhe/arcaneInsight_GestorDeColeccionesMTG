@@ -1,15 +1,14 @@
 package com.dam.rgb.db;
 
 import com.google.gson.Gson;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.*;
+import me.xdrop.fuzzywuzzy.FuzzySearch;
 import org.bson.Document;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class DBManager {
 
@@ -42,6 +41,7 @@ public class DBManager {
         client.close();
     }
 
+    // añade una lista de cartas a la base de datos
     public static void createSeveralCards(JSONArray cardJsonArray, String collectionName) {
 
         // conexion base de datos mongodb
@@ -80,5 +80,37 @@ public class DBManager {
 
         // cierra el objeto conexion
         client.close();
+    }
+
+    // recupera las cartas coincidentes de la base de datos
+    public static ArrayList<Document> searchFuzzyCards
+        (String fuzzyCardName, String searchField, String collectionName, boolean firstCardOnly) {
+
+        // conexion base de datos mongodb
+        MongoClient client = MongoClients.create();
+        MongoDatabase database = client.getDatabase("arcaneInsightDB");
+        MongoCollection<Document> collection = database.getCollection(collectionName);
+
+        ArrayList<Document> searchResults = new ArrayList<>();
+        MongoCursor<Document> cursor = collection.find().iterator();
+
+        while (cursor.hasNext()) {
+
+            Document cardDoc = cursor.next();
+            String fieldValue = cardDoc.getString(searchField);
+
+            // si la similitud entre el campo a buscar y el recuperado es mayor al 80%, añadimos los resultados
+            if (FuzzySearch.extractOne(fuzzyCardName, Collections.singleton(fieldValue)).getScore() >= 80) {
+                searchResults.add(cardDoc);
+                if (firstCardOnly)
+                    break;
+            }
+        }
+
+        // cierra los objetos
+        cursor.close();
+        client.close();
+
+        return searchResults;
     }
 }
