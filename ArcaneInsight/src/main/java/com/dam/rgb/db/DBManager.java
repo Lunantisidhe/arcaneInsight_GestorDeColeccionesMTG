@@ -1,5 +1,6 @@
 package com.dam.rgb.db;
 
+import com.dam.rgb.visual.Printer;
 import com.google.gson.Gson;
 import com.mongodb.client.*;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
@@ -12,13 +13,12 @@ import java.util.Collections;
 
 public class DBManager {
 
+    /* METODOS CREACION */
     // añade una carta a la base de datos
     public static void createCard(JSONObject cardJsonObj, String collectionName) {
 
         // conexion base de datos mongodb
-        MongoClient client = MongoClients.create();
-        MongoDatabase database = client.getDatabase("arcaneInsightDB");
-        MongoCollection<Document> collection = database.getCollection(collectionName);
+        Connection connection = new Connection(collectionName);
 
         // pasamos la carta de objeto json a json
         if (cardJsonObj == null || cardJsonObj.isEmpty()) {
@@ -35,19 +35,17 @@ public class DBManager {
         Document cardDoc = Document.parse(cardGson.toJson(cardObj));
 
         // añade el documento a la coleccion de mongo
-        collection.insertOne(cardDoc);
+        connection.getCollection().insertOne(cardDoc);
 
         // cierra el objeto conexion
-        client.close();
+        connection.close();
     }
 
     // añade una lista de cartas a la base de datos
     public static void createSeveralCards(JSONArray cardJsonArray, String collectionName) {
 
         // conexion base de datos mongodb
-        MongoClient client = MongoClients.create();
-        MongoDatabase database = client.getDatabase("arcaneInsightDB");
-        MongoCollection<Document> collection = database.getCollection(collectionName);
+        Connection connection = new Connection(collectionName);
 
         if (cardJsonArray == null || cardJsonArray.isEmpty()) {
             System.err.println("Error: no se pudieron añadir las cartas.");
@@ -76,10 +74,27 @@ public class DBManager {
         }
 
         // añade los documentos a la coleccion de mongo
-        collection.insertMany(cardDocs);
+        connection.getCollection().insertMany(cardDocs);
 
         // cierra el objeto conexion
-        client.close();
+        connection.close();
+    }
+
+
+    /* METODOS LECTURA */
+    // muestra todas las cartas de una coleccion
+    public static void seeAllCards(String collectionName) {
+
+        // conexion base de datos mongodb
+        Connection connection = new Connection(collectionName);
+
+        MongoCursor<Document> cursor = connection.getCollection().find().iterator();
+        while(cursor.hasNext())
+            Printer.printCard(new JSONObject(cursor.next().toJson()));
+
+        // cierra los objetos
+        cursor.close();
+        connection.close();
     }
 
     // recupera las cartas coincidentes de la base de datos
@@ -87,12 +102,10 @@ public class DBManager {
         (String fuzzyCardName, String searchField, String collectionName, boolean firstCardOnly) {
 
         // conexion base de datos mongodb
-        MongoClient client = MongoClients.create();
-        MongoDatabase database = client.getDatabase("arcaneInsightDB");
-        MongoCollection<Document> collection = database.getCollection(collectionName);
+        Connection connection = new Connection(collectionName);
 
         ArrayList<Document> searchResults = new ArrayList<>();
-        MongoCursor<Document> cursor = collection.find().iterator();
+        MongoCursor<Document> cursor = connection.getCollection().find().iterator();
 
         while (cursor.hasNext()) {
 
@@ -109,7 +122,7 @@ public class DBManager {
 
         // cierra los objetos
         cursor.close();
-        client.close();
+        connection.close();
 
         return searchResults;
     }
