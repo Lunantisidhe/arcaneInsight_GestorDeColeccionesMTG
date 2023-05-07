@@ -1,13 +1,10 @@
 package com.dam.rgb;
 
+import com.dam.rgb.db.DBManager;
+import com.dam.rgb.db.JSONManager;
 import com.dam.rgb.visual.Printer;
 import com.dam.rgb.visual.Style;
 import org.json.JSONObject;
-
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 
 public class ArcaneInsight {
 
@@ -112,18 +109,14 @@ public class ArcaneInsight {
                     "dance+dead"
             };
 
-            HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1)
-                    .followRedirects(HttpClient.Redirect.NORMAL).build();
-
             for (String url : urls) {
-                HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("https://api.scryfall.com/cards/named?fuzzy=" + url))
-                        .headers("Accept", "application/json").setHeader("User-Agent", "Mozilla/5.0").build();
 
-                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                String responseBody = response.body();
-                JSONObject json = new JSONObject(responseBody);
+                JSONObject json = JSONManager.requestJson(url);
 
-                Printer.printCard(json);
+                if (json != null) {
+                    DBManager.createCard(json);
+                    Printer.printCard(json);
+                }
                 // System.out.println(json.toString(4));
             }
         } catch (Exception e) {
