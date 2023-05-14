@@ -29,7 +29,7 @@ public class BulkDefaultCardsImporter {
         for (int i = 0; i < jsonDataArray.length(); i++) {
 
             JSONObject jsonObj = (JSONObject) jsonDataArray.get(i);
-            if (jsonObj.get("type").toString().equals("default_cards")) {
+            if (jsonObj.get("type").toString().equals("oracle_cards")) {
 
                 String update = jsonObj.get("updated_at").toString().split("\\+")[0];
                 DateTimeFormatter formatterIso = DateTimeFormatter.ISO_DATE_TIME;
@@ -100,7 +100,7 @@ public class BulkDefaultCardsImporter {
         for (int i = 0; i < jsonDataArray.length(); i++) {
 
             JSONObject jsonObj = (JSONObject) jsonDataArray.get(i);
-            if (jsonObj.get("type").toString().equals("default_cards")) {
+            if (jsonObj.get("type").toString().equals("oracle_cards")) {
                 urlName = jsonObj.get("download_uri").toString();
                 break;
             }
