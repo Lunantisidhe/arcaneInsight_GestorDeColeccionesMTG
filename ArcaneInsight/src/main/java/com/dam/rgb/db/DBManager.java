@@ -1,6 +1,7 @@
 package com.dam.rgb.db;
 
 import com.dam.rgb.visual.Printer;
+import com.dam.rgb.visual.enums.BorderType;
 import com.google.gson.Gson;
 import com.mongodb.client.*;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
@@ -13,6 +14,8 @@ import java.util.Collections;
 
 public class DBManager {
 
+    static final int SEARCH_LIMIT = 500;
+
     /* METODOS CREACION */
     // añade una carta a la base de datos
     public static void createCard(JSONObject cardJsonObj, String collectionName) {
@@ -20,11 +23,15 @@ public class DBManager {
         // conexion base de datos mongodb
         Connection connection = new Connection(collectionName);
 
-        // pasamos la carta de objeto json a json
         if (cardJsonObj == null || cardJsonObj.isEmpty()) {
             System.err.println("Error: no se pudo añadir la carta.");
             return;
         }
+
+        // quitamos el id del registro de todas las cartas
+        cardJsonObj.remove("_id");
+
+        // pasamos la carta de objeto json a json
         String cardJson = cardJsonObj.toString();
 
         // convierte el json a un objeto java
@@ -83,14 +90,33 @@ public class DBManager {
 
     /* METODOS LECTURA */
     // muestra todas las cartas de una coleccion
-    public static void seeAllCards(String collectionName) {
+    public static void seeAllCards(String collectionName, CardVisualization cardVisualization) {
 
         // conexion base de datos mongodb
         Connection connection = new Connection(collectionName);
-
         MongoCursor<Document> cursor = connection.getCollection().find().iterator();
-        while(cursor.hasNext())
-            Printer.printCard(new JSONObject(cursor.next().toJson()));
+
+        System.out.println("\nTu colección");
+
+        if (!cursor.hasNext())
+            System.out.println("No existe ninguna carta en tu colección");
+
+        else {
+            while (cursor.hasNext()) {
+
+                // segun la opcion, muestra las imagenes o solo los nombres de las cartas
+                if (cardVisualization.equals(CardVisualization.CARD))
+                    Printer.printCard(new JSONObject(cursor.next().toJson()), false);
+
+                else if (cardVisualization.equals(CardVisualization.CARD_W_IMG)) { // TODO revisar cartas doble cara
+
+                    System.out.println();
+                    Printer.printCard(new JSONObject(cursor.next().toJson()), true);
+
+                } else
+                    System.out.println(cursor.next().getString("name"));
+            }
+        }
 
         // cierra los objetos
         cursor.close();
@@ -114,8 +140,14 @@ public class DBManager {
 
             // si la similitud entre el campo a buscar y el recuperado es mayor al 80%, añadimos los resultados
             if (FuzzySearch.extractOne(fuzzyCardName, Collections.singleton(fieldValue)).getScore() >= 80) {
+
                 searchResults.add(cardDoc);
+
                 if (firstCardOnly)
+                    break;
+
+                // limite resultados
+                else if (searchResults.size() >= SEARCH_LIMIT)
                     break;
             }
         }

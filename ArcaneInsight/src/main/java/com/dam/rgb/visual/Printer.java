@@ -17,7 +17,7 @@ public class Printer {
 
     public static final int CARD_WIDTH = 60;
 
-    public static void printCard(JSONObject json) {
+    public static void printCard(JSONObject json, boolean image) {
         try {
             // elige los colores segun la identidad de color
             Colors[] colorIdentity = Colorizer.chooseColor(json.getJSONArray("color_identity"));
@@ -28,13 +28,15 @@ public class Printer {
 
                 for (int i = 0; i < 2; i++) {
                     JSONObject card = cardFaces.getJSONObject(i);
-                    // printCardArt(json, card);
+                    if (image)
+                        printCardArt(json, card);
                     printCardFace(json, card, colorIdentity, (i == 0 ? BorderType.TOP_HALF : BorderType.BOTTOM_HALF));
                 }
 
             // imprime cartas de una sola cara
             } else {
-                // printCardArt(json, json);
+                if (image)
+                    printCardArt(json, json);
                 printCardFace(json, json, colorIdentity, BorderType.COMPLETE);
             }
 
@@ -44,7 +46,7 @@ public class Printer {
     }
 
     // imprime el arte de una carta
-    private static void printCardArt(JSONObject json, JSONObject card) {
+    public static void printCardArt(JSONObject json, JSONObject card) {
         try {
             String artCrop = !card.optString("image_uris").isEmpty()
                     ? card.getJSONObject("image_uris").optString("art_crop")
@@ -165,17 +167,22 @@ public class Printer {
     // imprime textos justificados a la izquierda/derecha
     public static void printJustified(String left, String right, Colors[] colors, boolean italic) {
 
-        int spaces = (CARD_WIDTH - 4) - left.length() - right.length();
-        String spacing = " ".repeat(spaces);
+        try {
+            int spaces = (CARD_WIDTH - 4) - left.length() - right.length();
+            String spacing = " ".repeat(spaces);
 
-        // impresion izquierda
-        Colorizer.printColorized(VERTICAL_BORDER, colors[0]);
-        System.out.print(italic ? " \033[3m" : " ");
-        Colorizer.printTextWithColoredManaSymbols(left + "\033[0m" + spacing);
+            // impresion izquierda
+            Colorizer.printColorized(VERTICAL_BORDER, colors[0]);
+            System.out.print(italic ? " \033[3m" : " ");
+            Colorizer.printTextWithColoredManaSymbols(left + "\033[0m" + spacing);
 
-        // impresion derecha
-        Colorizer.printTextWithColoredManaSymbols(right);
-        Colorizer.printColorized(" " + VERTICAL_BORDER + "\n", colors.length > 1 ? colors[1] : colors[0]);
+            // impresion derecha
+            Colorizer.printTextWithColoredManaSymbols(right);
+            Colorizer.printColorized(" " + VERTICAL_BORDER + "\n", colors.length > 1 ? colors[1] : colors[0]);
+
+        } catch (IllegalArgumentException e) {
+            System.err.println("Error: no se ha podido imprimir la carta.");
+        }
     }
 
     // imprime un texto restringiendolo a un numero de caracteres
