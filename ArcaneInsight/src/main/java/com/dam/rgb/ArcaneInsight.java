@@ -1,6 +1,7 @@
 package com.dam.rgb;
 
 import com.dam.rgb.db.BulkDefaultCardsImporter;
+import com.dam.rgb.menu.MenuManager;
 import com.dam.rgb.visual.Style;
 
 public class ArcaneInsight {
@@ -10,7 +11,6 @@ public class ArcaneInsight {
         System.out.println(Style.LOGO);
         BulkDefaultCardsImporter.checkUpdate();
 
-//        System.out.println("1 - Ver tu colección");
-//        DBManager.seeAllCards("collection");
+        MenuManager.mainMenu();
     }
 }
