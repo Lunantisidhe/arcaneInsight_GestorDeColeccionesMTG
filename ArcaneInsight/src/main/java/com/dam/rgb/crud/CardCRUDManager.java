@@ -1,6 +1,7 @@
 package com.dam.rgb.crud;
 
 import com.dam.rgb.db.DBManager;
+import com.dam.rgb.db.utilities.CardViewEnum;
 import com.dam.rgb.visual.Printer;
 import org.bson.Document;
 import org.json.JSONObject;
@@ -61,6 +62,78 @@ public class CardCRUDManager {
             }
 
         } while (cardName != null);
+    }
+
+    // muestra todas las cartas de una coleccion
+    public static void viewCards(String collectionName, CardViewEnum cardViewEnum) {
+
+        // recuperamos las cartas de la coleccion
+        ArrayList<Document> allCards = DBManager.recoverAllCards(collectionName);
+
+        System.out.println("\nTu colección");
+
+        if (allCards.isEmpty())
+            System.out.println("No existe ninguna carta en tu colección");
+
+        else {
+            for (Document card : allCards) {
+
+                System.out.print("\n(x" + Math.round(card.getDouble("quantity")) + ") ");
+
+                // segun la opcion, muestra las imagenes o solo los nombres de las cartas
+                if (cardViewEnum.equals(CardViewEnum.CARD)) {
+                    Printer.printCard(new JSONObject(card.toJson()), false);
+                }
+
+                else if (cardViewEnum.equals(CardViewEnum.CARD_W_IMG)) { // TODO revisar cartas doble cara
+                    Printer.printCard(new JSONObject(card.toJson()), true);
+
+                } else
+                    System.out.println(card.getString("name"));
+            }
+        }
+    }
+
+    // muestra las cartas de la coleccion y comprueba si se quiere eliminar alguna
+    public static void deleteCard(String collectionName) {
+
+        // recuperamos las cartas de la coleccion
+        ArrayList<Document> allCards = DBManager.recoverAllCards(collectionName);
+
+        System.out.println("\nCartas que puedes eliminar");
+
+        if (allCards.isEmpty())
+            System.out.println("No existe ninguna carta en tu colección");
+
+        else {
+            for (int i = 0; i < allCards.size(); i++) {
+                Document card = allCards.get(i);
+
+                System.out.print("\n" + (i + 1));
+                System.out.println("\n(x" + Math.round(card.getDouble("quantity")) + ") ");
+                Printer.printCard(new JSONObject(card.toJson()), false);
+            }
+
+            String cardIdString;
+            int cardId = 0;
+            do {
+                cardIdString = textReturn("Introduce el número de la carta a añadir");
+
+                if (cardIdString != null) {
+                    try {
+                        cardId = Integer.parseInt(cardIdString);
+
+                        // elimina la carta de la coleccion
+                        DBManager.deleteCard(new JSONObject(allCards.get(cardId - 1).toJson()), "collection");
+                        System.out.println("Se ha eliminado tu carta.");
+
+                    } catch (NumberFormatException | IndexOutOfBoundsException e) {
+                        System.err.println("Error: el número introducido no es válido");
+                        cardId = 0;
+                    }
+                }
+            } while (cardIdString != null && cardId == 0);
+        }
     }
 
     // comprueba si se desea o no volver en una insercion de texto

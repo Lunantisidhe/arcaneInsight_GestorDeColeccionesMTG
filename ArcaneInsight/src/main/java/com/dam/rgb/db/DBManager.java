@@ -1,8 +1,6 @@
 package com.dam.rgb.db;
 
-import com.dam.rgb.db.utilities.CardViewEnum;
 import com.dam.rgb.db.utilities.Connection;
-import com.dam.rgb.visual.Printer;
 import com.google.gson.Gson;
 import com.mongodb.client.MongoCursor;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
@@ -15,6 +13,8 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+
+import static com.mongodb.client.model.Updates.set;
 
 public class DBManager {
 
@@ -33,11 +33,11 @@ public class DBManager {
         }
 
         // si la carta ya existe, añadimos a su cantidad
-        int quantity = 1;
         for (Document doc : connection.getCollection().find()) {
-            if (cardJsonObj.getString("name").equals(doc.getString("name")))
-                quantity += doc.getInteger("quantity");
-            // TODO añadir eliminacion carta original
+            if (cardJsonObj.getString("name").equals(doc.getString("name"))) {
+                connection.getCollection().updateOne(doc, set("quantity", doc.getDouble("quantity") + 1));
+                return;
+            }
         }
 
         // quitamos el id del registro de la carta
@@ -51,7 +51,7 @@ public class DBManager {
         Object cardObj = cardGson.fromJson(cardJson, Object.class);
 
         // convierte el objeto java a un documento bson
-        Document cardDoc = Document.parse(cardGson.toJson(cardObj)).append("quantity", quantity);
+        Document cardDoc = Document.parse(cardGson.toJson(cardObj)).append("quantity", 1d);
 
         // añade el documento a la coleccion de mongo
         connection.getCollection().insertOne(cardDoc);
@@ -105,42 +105,24 @@ public class DBManager {
 
 
     /* METODOS LECTURA */
-    // muestra todas las cartas de una coleccion
-    public static void seeAllCards(String collectionName, CardViewEnum cardViewEnum) {
+    // recupera todas las cartas de una coleccion
+    public static ArrayList<Document> recoverAllCards(String collectionName) {
 
         // conexion base de datos mongodb
         Connection connection = new Connection(collectionName);
         MongoCursor<Document> cursor = connection.getCollection().find().iterator();
 
-        System.out.println("\nTu colección");
-
-        if (!cursor.hasNext())
-            System.out.println("No existe ninguna carta en tu colección");
-
-        else {
-            while (cursor.hasNext()) {
-                Document doc = cursor.next();
-
-                System.out.print("\n(x" + doc.getInteger("quantity") + ") ");
-
-                // segun la opcion, muestra las imagenes o solo los nombres de las cartas
-                if (cardViewEnum.equals(CardViewEnum.CARD)) {
-                    System.out.println("");
-                    Printer.printCard(new JSONObject(doc.toJson()), false);
-                }
-
-                else if (cardViewEnum.equals(CardViewEnum.CARD_W_IMG)) { // TODO revisar cartas doble cara
-                    System.out.println("");
-                    Printer.printCard(new JSONObject(doc.toJson()), true);
-
-                } else
-                    System.out.println(doc.getString("name"));
-            }
+        ArrayList<Document> allCards = new ArrayList<>();
+        while (cursor.hasNext()) {
+            Document document = cursor.next();
+            allCards.add(document);
         }
 
         // cierra los objetos
         cursor.close();
         connection.close();
+
+        return allCards;
     }
 
     // recupera las cartas coincidentes de la base de datos
@@ -180,7 +162,57 @@ public class DBManager {
     }
 
 
-    /* METODOS ACTUALIZACION */
+    /* METODOS BORRADO */
+    // elimina una carta de la base de datos
+    public static void deleteCard(JSONObject cardJsonObj, String collectionName) {
+
+        // conexion base de datos mongodb
+        Connection connection = new Connection(collectionName);
+
+        if (cardJsonObj == null || cardJsonObj.isEmpty()) {
+            System.err.println("Error: no se pudo eliminar la carta.");
+            return;
+        }
+
+        // pasamos la carta de objeto json a json
+        String cardJson = cardJsonObj.toString();
+
+        // convierte el json a un objeto java
+        Gson cardGson = new Gson();
+        Object cardObj = cardGson.fromJson(cardJson, Object.class);
+
+        // convierte el objeto java a un documento bson
+        Document cardDoc = Document.parse(cardGson.toJson(cardObj));
+
+        // si hay varias copias de la carta, le restamos a su cantidad en vez de eliminarla
+        if (cardDoc.getDouble("quantity") > 1)
+            connection.getCollection().updateOne(cardDoc, set("quantity", cardDoc.getDouble("quantity") - 1));
+
+        // elimina el documento de la coleccion de mongo
+        else
+            connection.getCollection().deleteOne(cardDoc);
+
+        // cierra el objeto conexion
+        connection.close();
+
+    }
+
+
+    /* METODOS ACTUALIZACION BD */
+    // añade los datos de ultima importacion a la base de datos
+    public static void addLastUpdatedDate(LocalDateTime updateDate) {
+
+        // conexion base de datos mongodb
+        Connection connection = new Connection("data");
+
+        // insertamos los datos
+        Document data = new Document("last_update_date", updateDate);
+        connection.getCollection().insertOne(data);
+
+        // cierra el objeto conexion
+        connection.close();
+    }
+
     // visualiza los datos de ultima importacion de la base de datos
     public static LocalDateTime recoverLastUpdatedDate() {
 
@@ -199,19 +231,5 @@ public class DBManager {
         connection.close();
 
         return LocalDateTime.ofInstant(updateDate.toInstant(), ZoneId.systemDefault());
-    }
-
-    // añade los datos de ultima importacion a la base de datos
-    public static void addLastUpdatedDate(LocalDateTime updateDate) {
-
-        // conexion base de datos mongodb
-        Connection connection = new Connection("data");
-
-        // insertamos los datos
-        Document data = new Document("last_update_date", updateDate);
-        connection.getCollection().insertOne(data);
-
-        // cierra el objeto conexion
-        connection.close();
     }
 }

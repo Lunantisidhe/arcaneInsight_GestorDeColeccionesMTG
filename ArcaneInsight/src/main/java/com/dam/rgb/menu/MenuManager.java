@@ -6,9 +6,8 @@
 
 package com.dam.rgb.menu;
 
-import com.dam.rgb.db.utilities.CardViewEnum;
-import com.dam.rgb.db.DBManager;
 import com.dam.rgb.crud.CardCRUDManager;
+import com.dam.rgb.db.utilities.CardViewEnum;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -72,7 +71,7 @@ public class MenuManager {
         Runnable[] actions = {
                 MenuManager::viewCollection,
                 MenuManager::addCards,
-                () -> {}, // TODO eliminar cartas
+                () -> CardCRUDManager.deleteCard("collection"), // TODO eliminar cartas
                 () -> System.out.println("Ejecución finalizada.")
         };
 
@@ -90,9 +89,9 @@ public class MenuManager {
         String[] options = {"Solo nombres", "Formato carta", "Formato carta con imágenes", "Volver"};
 
         Runnable[] actions = {
-                () -> DBManager.seeAllCards("collection", CardViewEnum.TEXT_ONLY),
-                () -> DBManager.seeAllCards("collection", CardViewEnum.CARD),
-                () -> DBManager.seeAllCards("collection", CardViewEnum.CARD_W_IMG),
+                () -> CardCRUDManager.viewCards("collection", CardViewEnum.TEXT_ONLY),
+                () -> CardCRUDManager.viewCards("collection", CardViewEnum.CARD),
+                () -> CardCRUDManager.viewCards("collection", CardViewEnum.CARD_W_IMG),
                 () -> {}
         };
 
