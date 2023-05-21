@@ -71,7 +71,7 @@ public class MenuManager {
         Runnable[] actions = {
                 MenuManager::viewCollection,
                 MenuManager::addCards,
-                () -> CardCRUDManager.deleteCard("collection"), // TODO eliminar cartas
+                () -> CardCRUDManager.deleteCard("collection"),
                 () -> System.out.println("Ejecución finalizada.")
         };
 
@@ -107,7 +107,7 @@ public class MenuManager {
 
         Runnable[] actions = {
                 CardCRUDManager::addCard,
-                () -> {}, // TODO añadir desde archivo de texto
+                CardCRUDManager::addCardsFromFile,
                 () -> {}
         };
 

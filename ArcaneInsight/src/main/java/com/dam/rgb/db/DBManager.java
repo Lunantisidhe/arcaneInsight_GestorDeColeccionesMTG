@@ -22,7 +22,7 @@ public class DBManager {
 
     /* METODOS CREACION */
     // añade una carta a la base de datos
-    public static void createCard(JSONObject cardJsonObj, String collectionName) {
+    public static void createCard(JSONObject cardJsonObj, String collectionName, double quantity) {
 
         // conexion base de datos mongodb
         Connection connection = new Connection(collectionName);
@@ -35,7 +35,7 @@ public class DBManager {
         // si la carta ya existe, añadimos a su cantidad
         for (Document doc : connection.getCollection().find()) {
             if (cardJsonObj.getString("name").equals(doc.getString("name"))) {
-                connection.getCollection().updateOne(doc, set("quantity", doc.getDouble("quantity") + 1));
+                connection.getCollection().updateOne(doc, set("quantity", doc.getDouble("quantity") + quantity));
                 return;
             }
         }
@@ -51,7 +51,7 @@ public class DBManager {
         Object cardObj = cardGson.fromJson(cardJson, Object.class);
 
         // convierte el objeto java a un documento bson
-        Document cardDoc = Document.parse(cardGson.toJson(cardObj)).append("quantity", 1d);
+        Document cardDoc = Document.parse(cardGson.toJson(cardObj)).append("quantity", quantity);
 
         // añade el documento a la coleccion de mongo
         connection.getCollection().insertOne(cardDoc);
@@ -61,14 +61,11 @@ public class DBManager {
     }
 
     // añade una lista de cartas a la base de datos
-    public static void createSeveralCards(JSONArray cardJsonArray, String collectionName) {
-
-        // conexion base de datos mongodb
-        Connection connection = new Connection(collectionName);
+    public static ArrayList<Document> JSONArrayToDocArray(JSONArray cardJsonArray) {
 
         if (cardJsonArray == null || cardJsonArray.isEmpty()) {
             System.err.println("Error: no se pudieron añadir las cartas.");
-            return;
+            return null;
         }
 
         // leemos el array de cartas
@@ -80,9 +77,6 @@ public class DBManager {
                 System.err.println("Error: no se pudo añadir la carta.");
                 continue;
             }
-
-            // quitamos el id del registro de todas las cartas
-            cardJsonObj.remove("_id");
 
             // pasamos la carta a json
             String cardJson = cardJsonObj.toString();
@@ -96,8 +90,47 @@ public class DBManager {
             cardDocs.add(cardDoc);
         }
 
+        return cardDocs;
+    }
+
+    // añade una lista de cartas a la base de datos
+    public static void createSeveralCards(ArrayList<Document> cardDocs, String collectionName) { //TODO
+
+        // conexion base de datos mongodb
+        Connection connection = new Connection(collectionName);
+
+        ArrayList<Document> cardsToAdd = new ArrayList<>();
+
+        if (cardDocs == null || cardDocs.isEmpty()) {
+            System.err.println("Error: no se pudieron añadir las cartas.");
+            return;
+        }
+
+        // leemos el array de cartas
+        for (Document cardDoc : cardDocs) {
+
+            // añadimos la cantidad si no la tiene ya
+            if (cardDoc.getDouble("quantity") == null)
+                cardDoc.append("quantity", 1d);
+
+            // quitamos el id del registro de todas las cartas
+            cardDoc.remove("_id");
+
+            cardsToAdd.add(cardDoc);
+
+            // si la carta ya existe, añadimos a su cantidad
+            for (Document doc : connection.getCollection().find()) {
+                if (cardDoc.getString("name").equals(doc.getString("name"))) {
+                    connection.getCollection().updateOne(doc, set("quantity",
+                            doc.getDouble("quantity") + cardDoc.getDouble("quantity")));
+                    cardsToAdd.remove(cardDoc);
+                }
+            }
+        }
+
         // añade los documentos a la coleccion de mongo
-        connection.getCollection().insertMany(cardDocs);
+        if (!cardsToAdd.isEmpty())
+            connection.getCollection().insertMany(cardsToAdd);
 
         // cierra el objeto conexion
         connection.close();

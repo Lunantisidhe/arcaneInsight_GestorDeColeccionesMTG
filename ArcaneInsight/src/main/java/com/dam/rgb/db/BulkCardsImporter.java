@@ -118,7 +118,7 @@ public class BulkCardsImporter {
             JSONArray jsonArray = new JSONArray(json);
 
             // añade las cartas y la fecha de ultima actualizacion a la base de datos
-            DBManager.createSeveralCards(jsonArray, "allCards");
+            DBManager.createSeveralCards(DBManager.JSONArrayToDocArray(jsonArray), "allCards");
             DBManager.addLastUpdatedDate(bulkUpdateDate);
 
         } catch (IOException | JSONException e) {

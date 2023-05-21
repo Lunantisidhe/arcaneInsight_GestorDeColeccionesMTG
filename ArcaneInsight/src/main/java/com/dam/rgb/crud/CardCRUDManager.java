@@ -2,10 +2,16 @@ package com.dam.rgb.crud;
 
 import com.dam.rgb.db.DBManager;
 import com.dam.rgb.db.utilities.CardViewEnum;
+import com.dam.rgb.db.utilities.Connection;
 import com.dam.rgb.visual.Printer;
 import org.bson.Document;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -49,7 +55,8 @@ public class CardCRUDManager {
                                 cardId = Integer.parseInt(cardIdString);
 
                                 // añade la carta a la coleccion
-                                DBManager.createCard(new JSONObject(search.get(cardId - 1).toJson()), "collection");
+                                DBManager.createCard(new JSONObject(search.get(cardId - 1).toJson()),
+                                        "collection", 1d);
                                 System.out.println("Se ha añadido tu carta.");
 
                             } catch (NumberFormatException | IndexOutOfBoundsException e) {
@@ -62,6 +69,64 @@ public class CardCRUDManager {
             }
 
         } while (cardName != null);
+    }
+
+    // añade cartas a la base de datos desde un fichero txt
+    public static void addCardsFromFile() {
+
+        String pathStr = textReturn("Introduce el nombre o ruta del fichero");
+
+        if (pathStr != null) {
+
+            // si no tiene extension, se la añadimos
+            if (!pathStr.contains("."))
+                pathStr += ".txt";
+
+            ArrayList<Document> cards = new ArrayList<>();
+
+            String line;
+            String[] parts = new String[2];
+
+            try {
+                Path path = Paths.get(pathStr);
+                BufferedReader br = Files.newBufferedReader(path);
+
+                while ((line = br.readLine()) != null) {
+
+                    if (line.isBlank())
+                        continue;
+
+                    parts = line.split(" ", 2);
+
+                    Document card = DBManager.searchFuzzyCards(parts[1], "name", "allCards",
+                            true).get(0);
+
+                    double quantity = Double.parseDouble(parts[0]);
+                    if (quantity < 0)
+                        throw new NumberFormatException();
+                    card.append("quantity", quantity);
+
+                    // quitamos el id del registro de la carta
+                    card.remove("_id");
+
+                    cards.add(card);
+                }
+                br.close();
+
+                // añade los documentos a la coleccion de mongo
+                DBManager.createSeveralCards(cards, "collection");
+                System.out.println("Se han añadido " + cards.size() + " cartas a tu colección.");
+
+            } catch (ArrayIndexOutOfBoundsException e) {
+                System.err.println("\nError: parámetro no válido: " + parts[0]);
+            } catch (NumberFormatException e) {
+                System.err.println("\nError: número no válido: " + parts[0]);
+            } catch (IndexOutOfBoundsException e) {
+                System.err.println("\nError: no se ha encontrado la carta: " + parts[1]);
+            } catch (IOException e) {
+                System.err.println("\nError: error al leer el fichero.");
+            }
+        }
     }
 
     // muestra todas las cartas de una coleccion
@@ -85,7 +150,7 @@ public class CardCRUDManager {
                     Printer.printCard(new JSONObject(card.toJson()), false);
                 }
 
-                else if (cardViewEnum.equals(CardViewEnum.CARD_W_IMG)) { // TODO revisar cartas doble cara
+                else if (cardViewEnum.equals(CardViewEnum.CARD_W_IMG)) { //TODO revisar cartas doble cara
                     Printer.printCard(new JSONObject(card.toJson()), true);
 
                 } else
