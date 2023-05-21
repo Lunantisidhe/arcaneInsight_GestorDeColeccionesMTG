@@ -36,18 +36,18 @@ public class BulkDefaultCardsImporter {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM yyyy HH:mm");
 
                 LocalDateTime updateDate = LocalDateTime.parse(update, formatterIso);
-                LocalDateTime today = LocalDateTime.now();
+                LocalDateTime lastUpdated = DBManager.recoverLastUpdatedDate();
 
                 System.out.println("Comprobando la versión de la base de datos...");
 
                 // base de datos no actualizada
-                if (updateDate.isAfter(today)) {
+                if (updateDate.isAfter(lastUpdated)) {
 
                     System.out.println("Se ha encontrado una versión más reciente de la base de datos ("
                             + updateDate.format(formatter) + ").");
 
                     System.out.println("Actualizando base de datos...");
-                    importAllDefaultCards(allCardsJsonObj);
+                    importAllDefaultCards(allCardsJsonObj, updateDate);
                     System.out.println("Se ha actualizado la base de datos a la versión más reciente.");
 
                 // base de datos actualizada
@@ -60,7 +60,7 @@ public class BulkDefaultCardsImporter {
         }
     }
 
-    // hace una httprequest para recuperar el json con los datos de todas las cartas
+    // hace una http request para recuperar el json con los datos de todas las cartas
     public static JSONObject requestAllCardsData() {
 
         try {
@@ -84,12 +84,15 @@ public class BulkDefaultCardsImporter {
     }
 
     // importa todas las cartas a la base de datos
-    public static void importAllDefaultCards(JSONObject allCardsJsonObj){
+    public static void importAllDefaultCards(JSONObject allCardsJsonObj, LocalDateTime updateDate){
 
         // si existe la base de datos, la elimina
-        Connection connection = new Connection("allCards");
-        connection.getCollection().drop();
-        connection.close();
+        Connection connectionData = new Connection("data");
+        connectionData.getCollection().drop();
+        connectionData.close();
+        Connection connectionCards = new Connection("allCards");
+        connectionCards.getCollection().drop();
+        connectionCards.close();
 
 
         if (allCardsJsonObj == null || allCardsJsonObj.isEmpty())
@@ -120,6 +123,7 @@ public class BulkDefaultCardsImporter {
             JSONArray jsonArray = new JSONArray(json);
 
             DBManager.createSeveralCards(jsonArray, "allCards");
+            DBManager.addLastUpdatedDate(updateDate);
 
         } catch (IOException | JSONException e) {
             System.err.println("Error: No se pudieron importar las cartas.");

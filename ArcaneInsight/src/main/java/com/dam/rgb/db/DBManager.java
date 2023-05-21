@@ -1,16 +1,19 @@
 package com.dam.rgb.db;
 
 import com.dam.rgb.visual.Printer;
-import com.dam.rgb.visual.enums.BorderType;
 import com.google.gson.Gson;
-import com.mongodb.client.*;
+import com.mongodb.client.MongoCursor;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
 import org.bson.Document;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
+import java.util.Objects;
 
 public class DBManager {
 
@@ -87,6 +90,20 @@ public class DBManager {
         connection.close();
     }
 
+    // añade los datos de ultima importacion a la base de datos
+    public static void addLastUpdatedDate(LocalDateTime updateDate) {
+
+        // conexion base de datos mongodb
+        Connection connection = new Connection("data");
+
+        // insertamos los datos
+        Document data = new Document("last_update_date", updateDate);
+        connection.getCollection().insertOne(data);
+
+        // cierra el objeto conexion
+        connection.close();
+    }
+
 
     /* METODOS LECTURA */
     // muestra todas las cartas de una coleccion
@@ -157,5 +174,25 @@ public class DBManager {
         connection.close();
 
         return searchResults;
+    }
+
+    // visualiza los datos de ultima importacion de la base de datos
+    public static LocalDateTime recoverLastUpdatedDate() {
+
+        // conexion base de datos mongodb
+        Connection connection = new Connection("data");
+
+        // recuperamos los datos
+        Document data = connection.getCollection().find().first();
+
+        if (data == null)
+            return LocalDateTime.MIN;
+
+        Date updateDate = data.getDate("last_update_date");
+
+        // cierra el objeto conexion
+        connection.close();
+
+        return LocalDateTime.ofInstant(updateDate.toInstant(), ZoneId.systemDefault());
     }
 }
