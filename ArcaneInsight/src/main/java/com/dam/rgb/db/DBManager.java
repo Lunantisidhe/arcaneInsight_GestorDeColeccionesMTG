@@ -1,5 +1,7 @@
 package com.dam.rgb.db;
 
+import com.dam.rgb.db.utilities.CardViewEnum;
+import com.dam.rgb.db.utilities.Connection;
 import com.dam.rgb.visual.Printer;
 import com.google.gson.Gson;
 import com.mongodb.client.MongoCursor;
@@ -13,11 +15,10 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Objects;
 
 public class DBManager {
 
-    static final int SEARCH_LIMIT = 500;
+    private static final int SEARCH_LIMIT = 500;
 
     /* METODOS CREACION */
     // añade una carta a la base de datos
@@ -31,7 +32,7 @@ public class DBManager {
             return;
         }
 
-        // quitamos el id del registro de todas las cartas
+        // quitamos el id del registro de la cartas
         cardJsonObj.remove("_id");
 
         // pasamos la carta de objeto json a json
@@ -66,12 +67,16 @@ public class DBManager {
         ArrayList<Document> cardDocs = new ArrayList<>();
         for (int i = 0; i < cardJsonArray.length(); i++) {
 
-            // pasamos la carta a json
             JSONObject cardJsonObj = cardJsonArray.getJSONObject(i);
             if (cardJsonObj == null || cardJsonObj.isEmpty()) {
                 System.err.println("Error: no se pudo añadir la carta.");
                 continue;
             }
+
+            // quitamos el id del registro de todas las cartas
+            cardJsonObj.remove("_id");
+
+            // pasamos la carta a json
             String cardJson = cardJsonObj.toString();
 
             // convierte el json a un objeto java
@@ -90,24 +95,10 @@ public class DBManager {
         connection.close();
     }
 
-    // añade los datos de ultima importacion a la base de datos
-    public static void addLastUpdatedDate(LocalDateTime updateDate) {
-
-        // conexion base de datos mongodb
-        Connection connection = new Connection("data");
-
-        // insertamos los datos
-        Document data = new Document("last_update_date", updateDate);
-        connection.getCollection().insertOne(data);
-
-        // cierra el objeto conexion
-        connection.close();
-    }
-
 
     /* METODOS LECTURA */
     // muestra todas las cartas de una coleccion
-    public static void seeAllCards(String collectionName, CardVisualization cardVisualization) {
+    public static void seeAllCards(String collectionName, CardViewEnum cardViewEnum) {
 
         // conexion base de datos mongodb
         Connection connection = new Connection(collectionName);
@@ -122,10 +113,10 @@ public class DBManager {
             while (cursor.hasNext()) {
 
                 // segun la opcion, muestra las imagenes o solo los nombres de las cartas
-                if (cardVisualization.equals(CardVisualization.CARD))
+                if (cardViewEnum.equals(CardViewEnum.CARD))
                     Printer.printCard(new JSONObject(cursor.next().toJson()), false);
 
-                else if (cardVisualization.equals(CardVisualization.CARD_W_IMG)) { // TODO revisar cartas doble cara
+                else if (cardViewEnum.equals(CardViewEnum.CARD_W_IMG)) { // TODO revisar cartas doble cara
 
                     System.out.println();
                     Printer.printCard(new JSONObject(cursor.next().toJson()), true);
@@ -176,6 +167,8 @@ public class DBManager {
         return searchResults;
     }
 
+
+    /* METODOS ACTUALIZACION */
     // visualiza los datos de ultima importacion de la base de datos
     public static LocalDateTime recoverLastUpdatedDate() {
 
@@ -194,5 +187,19 @@ public class DBManager {
         connection.close();
 
         return LocalDateTime.ofInstant(updateDate.toInstant(), ZoneId.systemDefault());
+    }
+
+    // añade los datos de ultima importacion a la base de datos
+    public static void addLastUpdatedDate(LocalDateTime updateDate) {
+
+        // conexion base de datos mongodb
+        Connection connection = new Connection("data");
+
+        // insertamos los datos
+        Document data = new Document("last_update_date", updateDate);
+        connection.getCollection().insertOne(data);
+
+        // cierra el objeto conexion
+        connection.close();
     }
 }

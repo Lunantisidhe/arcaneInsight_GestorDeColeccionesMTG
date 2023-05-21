@@ -1,8 +1,8 @@
 package com.dam.rgb.visual;
 
-import com.dam.rgb.visual.enums.BorderType;
-import com.dam.rgb.visual.enums.Colors;
-import com.dam.rgb.visual.enums.Position;
+import com.dam.rgb.visual.enums.CardPartEnum;
+import com.dam.rgb.visual.enums.ColorEnum;
+import com.dam.rgb.visual.enums.CardBorderEnum;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,16 +11,17 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 import static com.dam.rgb.visual.Style.*;
-import static com.dam.rgb.visual.enums.Position.*;
+import static com.dam.rgb.visual.enums.CardBorderEnum.*;
 
 public class Printer {
 
     public static final int CARD_WIDTH = 60;
 
+    // imprime una carta completa
     public static void printCard(JSONObject json, boolean image) {
         try {
             // elige los colores segun la identidad de color
-            Colors[] colorIdentity = Colorizer.chooseColor(json.getJSONArray("color_identity"));
+            ColorEnum[] colorIdentity = Colorizer.chooseColor(json.getJSONArray("color_identity"));
 
             // imprime cartas de doble cara
             if (!json.optString("card_faces").isEmpty()) {
@@ -30,18 +31,18 @@ public class Printer {
                     JSONObject card = cardFaces.getJSONObject(i);
                     if (image)
                         printCardArt(json, card);
-                    printCardFace(json, card, colorIdentity, (i == 0 ? BorderType.TOP_HALF : BorderType.BOTTOM_HALF));
+                    printCardFace(json, card, colorIdentity, (i == 0 ? CardPartEnum.TOP_HALF : CardPartEnum.BOTTOM_HALF));
                 }
 
             // imprime cartas de una sola cara
             } else {
                 if (image)
                     printCardArt(json, json);
-                printCardFace(json, json, colorIdentity, BorderType.COMPLETE);
+                printCardFace(json, json, colorIdentity, CardPartEnum.COMPLETE);
             }
 
         } catch (JSONException e) {
-            e.printStackTrace();
+            System.err.println("Error: error de impresión.");
         }
     }
 
@@ -55,14 +56,14 @@ public class Printer {
             if (artCrop != null)
                 PixelArt.printPixel(artCrop, 3);
         } catch (JSONException e) {
-            e.printStackTrace();
+            System.err.println("Error: error de impresión.");
         }
     }
 
     // imprime una cara de una carta
-    private static void printCardFace(JSONObject json, JSONObject card, Colors[] colorIdentity, BorderType borderType) {
+    private static void printCardFace(JSONObject json, JSONObject card, ColorEnum[] colorIdentity, CardPartEnum cardPartEnum) {
 
-        if (borderType != BorderType.BOTTOM_HALF)
+        if (cardPartEnum != CardPartEnum.BOTTOM_HALF)
             printBorder(TOP, colorIdentity);
 
         // informacion basica
@@ -108,7 +109,7 @@ public class Printer {
         printBorder(CENTER, colorIdentity);
 
         // informacion pie
-        if (borderType != BorderType.TOP_HALF) {
+        if (cardPartEnum != CardPartEnum.TOP_HALF) {
             String rarity = json.optString("rarity");
             String collectorNumber = json.optString("collector_number").replace("★", "*");
             String releasedAt = json.optString("released_at");
@@ -135,21 +136,21 @@ public class Printer {
     }
 
     // imprime los bordes de la carta en los colores elegidos
-    public static void printBorder(Position position, Colors[] colors) {
+    public static void printBorder(CardBorderEnum cardBorderEnum, ColorEnum[] colors) {
 
         String left = null, center = null, right = null;
 
-        if (position == TOP) {
+        if (cardBorderEnum == TOP) {
             left = TOP_LEFT_CORNER;
             center = HORIZONTAL_BORDER;
             right = TOP_RIGHT_CORNER;
 
-        } else if (position == CENTER) {
+        } else if (cardBorderEnum == CENTER) {
             left = CENTER_LEFT_CONNECTOR;
             center = LIGHT_HORIZONTAL_BORDER;
             right = CENTER_RIGHT_CONNECTOR;
 
-        } else if (position == BOTTOM) {
+        } else if (cardBorderEnum == BOTTOM) {
             left = BOTTOM_LEFT_CORNER;
             center = HORIZONTAL_BORDER;
             right = BOTTOM_RIGHT_CORNER;
@@ -165,7 +166,7 @@ public class Printer {
     }
 
     // imprime textos justificados a la izquierda/derecha
-    public static void printJustified(String left, String right, Colors[] colors, boolean italic) {
+    public static void printJustified(String left, String right, ColorEnum[] colors, boolean italic) {
 
         try {
             int spaces = (CARD_WIDTH - 4) - left.length() - right.length();
@@ -186,7 +187,7 @@ public class Printer {
     }
 
     // imprime un texto restringiendolo a un numero de caracteres
-    public static void squishText(JSONObject card, String textBlock, Colors[] colors, boolean italic) {
+    public static void squishText(JSONObject card, String textBlock, ColorEnum[] colors, boolean italic) {
 
         String cardType = card.optString("type_line");
         String[] splitTextArr = textBlock.split("\n");

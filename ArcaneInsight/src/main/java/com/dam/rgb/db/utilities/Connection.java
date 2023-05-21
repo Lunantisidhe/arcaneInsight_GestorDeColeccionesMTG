@@ -1,4 +1,4 @@
-package com.dam.rgb.db;
+package com.dam.rgb.db.utilities;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
@@ -6,6 +6,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 
+// representa una conexion con la base de datos de mongodb
 public class Connection {
 
     MongoClient client;
@@ -21,7 +22,6 @@ public class Connection {
     }
 
     public void close() {
-
         client.close();
     }
 

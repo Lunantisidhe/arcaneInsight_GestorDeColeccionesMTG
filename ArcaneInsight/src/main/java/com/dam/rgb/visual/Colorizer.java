@@ -1,77 +1,82 @@
 package com.dam.rgb.visual;
 
-import com.dam.rgb.visual.enums.Colors;
+import com.dam.rgb.visual.enums.ColorEnum;
 import org.json.JSONArray;
 
 import java.util.Map;
 
-import static com.dam.rgb.visual.enums.Colors.*;
-
 public class Colorizer {
-    public static int[] white = {241, 235, 221}, blue = {37, 150, 190}, black = {85,61,125},
-                        red = {227, 60, 34}, green = {9, 106, 64};
-    public static int[] golden = {217, 173, 61}, silver = {205, 210, 217}, grey = {187, 187, 187};
 
-    public static Map<String, Colors> colorCorrespondency = Map.of(
-            "W", WHITE,
-            "U", BLUE,
-            "B", BLACK,
-            "R", RED,
-            "G", GREEN
+    // valores rgb de los colores empleados
+    private static final int[] WHITE = {241, 235, 221};
+    private static final int[] BLUE = {37, 150, 190};
+    private static final int[] BLACK = {85, 61, 125};
+    private static final int[] RED = {227, 60, 34};
+    private static final int[] GREEN = {9, 106, 64};
+    private static final int[] GOLDEN = {217, 173, 61};
+    private static final int[] SILVER = {205, 210, 217};
+    private static final int[] GREY = {187, 187, 187};
+
+    public static final Map<String, ColorEnum> colorCorrespondency = Map.of(
+            "W", ColorEnum.WHITE,
+            "U", ColorEnum.BLUE,
+            "B", ColorEnum.BLACK,
+            "R", ColorEnum.RED,
+            "G", ColorEnum.GREEN
     );
 
     // imprime texto en el color seleccionado
-    public static void printColorized(String text, Colors color) {
+    public static void printColorized(String text, ColorEnum color) {
 
         int[] colorValues = new int[3];
 
-        if (color.equals(WHITE))
-            colorValues = white;
-        else if (color.equals(BLUE))
-            colorValues = blue;
-        else if (color.equals(BLACK))
-            colorValues = black;
-        else if (color.equals(RED))
-            colorValues = red;
-        else if (color.equals(GREEN))
-            colorValues = green;
-        else if (color.equals(GOLDEN))
-            colorValues = golden;
-        else if (color.equals(SILVER))
-            colorValues = silver;
-        else if (color.equals(GREY))
-            colorValues = grey;
+        if (color.equals(ColorEnum.WHITE))
+            colorValues = WHITE;
+        else if (color.equals(ColorEnum.BLUE))
+            colorValues = BLUE;
+        else if (color.equals(ColorEnum.BLACK))
+            colorValues = BLACK;
+        else if (color.equals(ColorEnum.RED))
+            colorValues = RED;
+        else if (color.equals(ColorEnum.GREEN))
+            colorValues = GREEN;
+        else if (color.equals(ColorEnum.GOLDEN))
+            colorValues = GOLDEN;
+        else if (color.equals(ColorEnum.SILVER))
+            colorValues = SILVER;
+        else if (color.equals(ColorEnum.GREY))
+            colorValues = GREY;
 
         // imprime el texto en el color correspondiente y resetea el color del texto de la consola
         System.out.print("\033[38;2;" + colorValues[0] + ";" + colorValues[1] + ";" + colorValues[2] + "m" + text + "\033[0m");
     }
 
     // a partir de la identidad de color de una carta, devuelve sus colores correspondientes
-    public static Colors[] chooseColor(JSONArray colorIdentity) {
+    public static ColorEnum[] chooseColor(JSONArray colorIdentity) {
 
         // carta incolora
         if (colorIdentity.toString().equals("[]"))
-            return new Colors[] {
-                    SILVER
+            return new ColorEnum[] {
+                    ColorEnum.SILVER
             };
 
         // carta tricolor+
         else if (colorIdentity.toString().length() >= 13)
-            return new Colors[] {
-                    GOLDEN
+            return new ColorEnum[] {
+                    ColorEnum.GOLDEN
             };
 
         // carta bicolor
         else if (colorIdentity.toString().length() == 9)
-            return new Colors[] {
-                    colorCorrespondency.getOrDefault(String.valueOf(colorIdentity.toString().charAt(2)), SILVER),
-                    colorCorrespondency.getOrDefault(String.valueOf(colorIdentity.toString().charAt(6)), SILVER)
+            return new ColorEnum[] {
+                    colorCorrespondency.getOrDefault(String.valueOf(colorIdentity.toString().charAt(2)), ColorEnum.SILVER),
+                    colorCorrespondency.getOrDefault(String.valueOf(colorIdentity.toString().charAt(6)), ColorEnum.SILVER)
             };
 
         // carta monocolor
         else
-            return new Colors[] {
-                    colorCorrespondency.getOrDefault(String.valueOf(colorIdentity.toString().charAt(2)), SILVER)
+            return new ColorEnum[] {
+                    colorCorrespondency.getOrDefault(String.valueOf(colorIdentity.toString().charAt(2)), ColorEnum.SILVER)
             };
     }
 
@@ -83,18 +88,18 @@ public class Colorizer {
             int startIndex = text.indexOf('{', i);
             if (startIndex == -1) {
                 // si no quedan mas simbolos de mana, termina de imprimir el texto
-                printColorized(text.substring(i), GREY);
+                printColorized(text.substring(i), ColorEnum.GREY);
                 break;
             }
 
             // imprime el texto entre la posicion actual y el simbolo de mana
             if (startIndex > i)
-                printColorized(text.substring(i, startIndex), GREY);
+                printColorized(text.substring(i, startIndex), ColorEnum.GREY);
 
             int endIndex = text.indexOf('}', startIndex + 1);
             if (endIndex == -1) {
                 // si no quedan mas simbolos de mana, termina de imprimir el texto
-                printColorized(text.substring(i), GREY);
+                printColorized(text.substring(i), ColorEnum.GREY);
                 break;
             }
 
@@ -105,21 +110,21 @@ public class Colorizer {
             if (manaSymbol.contains("/")) {
                 // separa los simbolos para colorearlos por separado
                 String[] splitSymbols = manaSymbol.substring(1, manaSymbol.length() - 1).split("/");
-                printColorized("{", GOLDEN);
+                printColorized("{", ColorEnum.GOLDEN);
 
                 for (String splitSymbol : splitSymbols) {
-                    printColorized(splitSymbol, colorCorrespondency.getOrDefault(splitSymbol, SILVER));
+                    printColorized(splitSymbol, colorCorrespondency.getOrDefault(splitSymbol, ColorEnum.SILVER));
 
                     if (!splitSymbol.equals(splitSymbols[splitSymbols.length - 1]))
-                        printColorized("/", GOLDEN);
+                        printColorized("/", ColorEnum.GOLDEN);
                 }
 
-                printColorized("}", GOLDEN);
+                printColorized("}", ColorEnum.GOLDEN);
             }
 
             // lo colorea de forma correspondiente
             else
-                printColorized(manaSymbol, colorCorrespondency.getOrDefault(String.valueOf(manaSymbol.charAt(1)), SILVER));
+                printColorized(manaSymbol, colorCorrespondency.getOrDefault(String.valueOf(manaSymbol.charAt(1)), ColorEnum.SILVER));
 
             i = endIndex + 1;
         }

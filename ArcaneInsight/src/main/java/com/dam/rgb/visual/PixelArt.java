@@ -11,9 +11,10 @@ public class PixelArt {
 
     private static final char ASCII_PIXEL = '█';
 
+    // imprime imagenes en consola empleando caracteres unicode
     public static void printPixel(String fileName, int reductionRatio) {
         try {
-            // carga la imagen de una url o un fichero
+
             BufferedImage sourceImg;
             if (fileName.startsWith("http"))
                 sourceImg = ImageIO.read(new URL(fileName + ".jpg"));
@@ -22,27 +23,46 @@ public class PixelArt {
 
             // reduce el tamaño de la imagen
             int width = sourceImg.getWidth() / reductionRatio;
-            int height = sourceImg.getHeight() / 3 / reductionRatio;
+            int height = sourceImg.getHeight() / (reductionRatio * 3);
+            BufferedImage resizedImg = resizeImage(sourceImg, width, height);
 
-            BufferedImage resizedImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-            Graphics2D graphics = resizedImg.createGraphics();
-            graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-            graphics.drawImage(sourceImg, 0, 0, width, height, null);
-            graphics.dispose();
-
-            // convierte la imagen a pixeles ascii coloreados
+            // imprime los pixeles ascii coloreados
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
 
-                    //calcula el color del bloque, lo imprime y resetea el color del texto de la consola
                     Color color = new Color(resizedImg.getRGB(x, y));
-                    System.out.print("\033[38;2;" + color.getRed() + ";" + color.getGreen() + ";" + color.getBlue()
-                            + "m" + ASCII_PIXEL + "\033[0m");
+                    printColoredPixel(color);
                 }
                 System.out.println();
             }
+
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error: error de impresión.");
         }
+    }
+
+    // redimensiona imagenes
+    private static BufferedImage resizeImage(BufferedImage sourceImg, int width, int height) {
+
+        // crea una nueva imagen
+        BufferedImage resizedImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics = resizedImg.createGraphics();
+
+        // configura la interpolacion
+        graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
+        // redimensiona la imagen
+        graphics.drawImage(sourceImg, 0, 0, width, height, null);
+        graphics.dispose();
+
+        return resizedImg;
+    }
+
+    // imprime pixeles coloreados
+    private static void printColoredPixel(Color color) {
+
+        // imprime los pixeles coloreados y resetea el color de la consola
+        System.out.print("\033[38;2;" + color.getRed() + ";" + color.getGreen() + ";" + color.getBlue()
+                + "m" + ASCII_PIXEL + "\033[0m");
     }
 }

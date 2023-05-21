@@ -1,5 +1,6 @@
 package com.dam.rgb.visual;
 
+// logo y caracteres unicode empleados en el programa
 public class Style {
 
     public static final String LOGO = """
