@@ -32,7 +32,15 @@ public class DBManager {
             return;
         }
 
-        // quitamos el id del registro de la cartas
+        // si la carta ya existe, añadimos a su cantidad
+        int quantity = 1;
+        for (Document doc : connection.getCollection().find()) {
+            if (cardJsonObj.getString("name").equals(doc.getString("name")))
+                quantity += doc.getInteger("quantity");
+            // TODO añadir eliminacion carta original
+        }
+
+        // quitamos el id del registro de la carta
         cardJsonObj.remove("_id");
 
         // pasamos la carta de objeto json a json
@@ -43,7 +51,7 @@ public class DBManager {
         Object cardObj = cardGson.fromJson(cardJson, Object.class);
 
         // convierte el objeto java a un documento bson
-        Document cardDoc = Document.parse(cardGson.toJson(cardObj));
+        Document cardDoc = Document.parse(cardGson.toJson(cardObj)).append("quantity", quantity);
 
         // añade el documento a la coleccion de mongo
         connection.getCollection().insertOne(cardDoc);
@@ -111,18 +119,22 @@ public class DBManager {
 
         else {
             while (cursor.hasNext()) {
+                Document doc = cursor.next();
+
+                System.out.print("\n(x" + doc.getInteger("quantity") + ") ");
 
                 // segun la opcion, muestra las imagenes o solo los nombres de las cartas
-                if (cardViewEnum.equals(CardViewEnum.CARD))
-                    Printer.printCard(new JSONObject(cursor.next().toJson()), false);
+                if (cardViewEnum.equals(CardViewEnum.CARD)) {
+                    System.out.println("");
+                    Printer.printCard(new JSONObject(doc.toJson()), false);
+                }
 
                 else if (cardViewEnum.equals(CardViewEnum.CARD_W_IMG)) { // TODO revisar cartas doble cara
-
-                    System.out.println();
-                    Printer.printCard(new JSONObject(cursor.next().toJson()), true);
+                    System.out.println("");
+                    Printer.printCard(new JSONObject(doc.toJson()), true);
 
                 } else
-                    System.out.println(cursor.next().getString("name"));
+                    System.out.println(doc.getString("name"));
             }
         }
 
