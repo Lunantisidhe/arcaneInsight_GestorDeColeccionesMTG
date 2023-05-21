@@ -9,8 +9,6 @@ import java.net.URL;
 
 public class PixelArt {
 
-    private static final char ASCII_PIXEL = '█';
-
     // imprime imagenes en consola empleando caracteres unicode
     public static void printPixel(String fileName, int reductionRatio) {
         try {
@@ -63,6 +61,6 @@ public class PixelArt {
 
         // imprime los pixeles coloreados y resetea el color de la consola
         System.out.print("\033[38;2;" + color.getRed() + ";" + color.getGreen() + ";" + color.getBlue()
-                + "m" + ASCII_PIXEL + "\033[0m");
+                + "m" + Style.ASCII_PIXEL + "\033[0m");
     }
 }

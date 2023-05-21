@@ -2,7 +2,6 @@ package com.dam.rgb.crud;
 
 import com.dam.rgb.db.DBManager;
 import com.dam.rgb.db.utilities.CardViewEnum;
-import com.dam.rgb.db.utilities.Connection;
 import com.dam.rgb.visual.Printer;
 import org.bson.Document;
 import org.json.JSONObject;

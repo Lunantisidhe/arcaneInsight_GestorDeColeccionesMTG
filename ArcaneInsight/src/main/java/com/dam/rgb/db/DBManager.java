@@ -94,46 +94,56 @@ public class DBManager {
     }
 
     // añade una lista de cartas a la base de datos
-    public static void createSeveralCards(ArrayList<Document> cardDocs, String collectionName) { //TODO
+    public static void createSeveralCards(ArrayList<Document> cardDocs, String collectionName) {
 
         // conexion base de datos mongodb
         Connection connection = new Connection(collectionName);
 
-        ArrayList<Document> cardsToAdd = new ArrayList<>();
+        // importacion todas las cartas
+        if (collectionName.equals("allCards")) {
 
-        if (cardDocs == null || cardDocs.isEmpty()) {
-            System.err.println("Error: no se pudieron añadir las cartas.");
-            return;
+            connection.getCollection().insertMany(cardDocs);
+            connection.close();
         }
 
-        // leemos el array de cartas
-        for (Document cardDoc : cardDocs) {
+        else {
 
-            // añadimos la cantidad si no la tiene ya
-            if (cardDoc.getDouble("quantity") == null)
-                cardDoc.append("quantity", 1d);
+            ArrayList<Document> cardsToAdd = new ArrayList<>();
 
-            // quitamos el id del registro de todas las cartas
-            cardDoc.remove("_id");
+            if (cardDocs == null || cardDocs.isEmpty()) {
+                System.err.println("Error: no se pudieron añadir las cartas.");
+                return;
+            }
 
-            cardsToAdd.add(cardDoc);
+            // leemos el array de cartas
+            for (Document cardDoc : cardDocs) {
 
-            // si la carta ya existe, añadimos a su cantidad
-            for (Document doc : connection.getCollection().find()) {
-                if (cardDoc.getString("name").equals(doc.getString("name"))) {
-                    connection.getCollection().updateOne(doc, set("quantity",
-                            doc.getDouble("quantity") + cardDoc.getDouble("quantity")));
-                    cardsToAdd.remove(cardDoc);
+                // añadimos la cantidad si no la tiene ya
+                if (cardDoc.getDouble("quantity") == null)
+                    cardDoc.append("quantity", 1d);
+
+                // quitamos el id del registro de todas las cartas
+                cardDoc.remove("_id");
+
+                cardsToAdd.add(cardDoc);
+
+                // si la carta ya existe, añadimos a su cantidad
+                for (Document doc : connection.getCollection().find()) {
+                    if (cardDoc.getString("name").equals(doc.getString("name"))) {
+                        connection.getCollection().updateOne(doc, set("quantity",
+                                doc.getDouble("quantity") + cardDoc.getDouble("quantity")));
+                        cardsToAdd.remove(cardDoc);
+                    }
                 }
             }
+
+            // añade los documentos a la coleccion de mongo
+            if (!cardsToAdd.isEmpty())
+                connection.getCollection().insertMany(cardsToAdd);
+
+            // cierra el objeto conexion
+            connection.close();
         }
-
-        // añade los documentos a la coleccion de mongo
-        if (!cardsToAdd.isEmpty())
-            connection.getCollection().insertMany(cardsToAdd);
-
-        // cierra el objeto conexion
-        connection.close();
     }
 
 

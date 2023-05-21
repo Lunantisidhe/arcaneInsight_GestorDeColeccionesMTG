@@ -89,6 +89,12 @@ public class BulkCardsImporter {
     // importa todas las cartas a la base de datos
     public static void importAllDefaultCards(JSONObject bulkData, LocalDateTime bulkUpdateDate) {
 
+        if (bulkData == null || bulkData.isEmpty())
+            return;
+
+        // recupera la url de descarga
+        String urlName = bulkData.getString("download_uri");
+
         // si existen las bases de datos, las elimina
         Connection dataConnection = new Connection("data");
         dataConnection.getCollection().drop();
@@ -97,11 +103,6 @@ public class BulkCardsImporter {
         cardsConnection.getCollection().drop();
         cardsConnection.close();
 
-        if (bulkData == null || bulkData.isEmpty())
-            return;
-
-        // recupera la url de descarga
-        String urlName = bulkData.getString("download_uri");
 
         try {
             // lee el fichero json con las cartas para evitar descargarlo
