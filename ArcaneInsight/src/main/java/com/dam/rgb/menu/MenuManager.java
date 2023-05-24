@@ -9,6 +9,7 @@
                 1.2.1.1 - añadir cartas
                 1.2.1.2 - eliminar cartas
             1.2.2 - crear nuevo mazo
+            1.2.3 - eliminar mazo
 */
 
 package com.dam.rgb.menu;
@@ -124,11 +125,12 @@ public class MenuManager {
     // 1.2 - tus mazos
     private static void decks() {
 
-        String[] options = {"Ver tus mazos", "Crear nuevo mazo", "Volver"};
+        String[] options = {"Ver tus mazos", "Crear nuevo mazo", "Eliminar mazo", "Volver"};
 
         Runnable[] actions = {
                 CardCRUDManager::viewDecks,
                 CardCRUDManager::createDeck,
+                CardCRUDManager::deleteDeck,
                 () -> {}
         };
 

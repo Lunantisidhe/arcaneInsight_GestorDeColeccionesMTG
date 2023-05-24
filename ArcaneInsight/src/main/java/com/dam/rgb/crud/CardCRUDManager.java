@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class CardCRUDManager {
@@ -164,7 +165,7 @@ public class CardCRUDManager {
                     Printer.printCard(new JSONObject(card.toJson()), false);
                 }
 
-                else if (cardViewEnum.equals(CardViewEnum.CARD_W_IMG)) { //TODO revisar cartas doble cara
+                else if (cardViewEnum.equals(CardViewEnum.CARD_W_IMG)) {
                     System.out.println();
                     Printer.printCard(new JSONObject(card.toJson()), true);
 
@@ -250,7 +251,7 @@ public class CardCRUDManager {
             String cardIdString;
             int cardId = 0;
             do {
-                cardIdString = textReturn("Introduce el número de la carta a añadir");
+                cardIdString = textReturn("Introduce el número de la carta a eliminar");
 
                 if (cardIdString != null) {
                     try {
@@ -266,6 +267,56 @@ public class CardCRUDManager {
                     }
                 }
             } while (cardIdString != null && cardId == 0);
+        }
+    }
+
+    // muestra los mazos de la coleccion y comprueba si se quiere eliminar alguno
+    public static void deleteDeck() {//TODO
+
+        ArrayList<String> deckNames = DBManager.recoverDecks();
+
+        if (deckNames.isEmpty())
+            System.out.println("No existe ningún mazo");
+
+        else {
+            for (int i = 0; i < deckNames.size(); i++) {
+                String deckName = deckNames.get(i);
+                String croppedDeckName = deckName.substring(0, deckName.length() - 5);
+
+                System.out.println((i + 1) + " - " + croppedDeckName);
+            }
+
+            String deckIdString;
+            int deckId = 0;
+            do {
+                deckIdString = textReturn("Introduce el número del deck a eliminar");
+
+                if (deckIdString != null) {
+                    try {
+                        deckId = Integer.parseInt(deckIdString);
+                        String deckName = deckNames.get(deckId - 1);
+                        String croppedDeckName = deckName.substring(0, deckName.length() - 5);
+
+                        // confirmacion
+                        String confirmation;
+                        do {
+                            confirmation = textReturn("Para eliminar el mazo escribe \""
+                                    + croppedDeckName.toUpperCase() + "\"");
+
+                            if (confirmation == null)
+                                break;
+
+                            if (Objects.requireNonNull(confirmation).equalsIgnoreCase(croppedDeckName))
+                                DBManager.deleteDeck(deckName);
+
+                        } while (!Objects.requireNonNull(confirmation).equalsIgnoreCase(croppedDeckName));
+
+                    } catch (NumberFormatException | IndexOutOfBoundsException e) {
+                        System.err.println("Error: el número introducido no es válido");
+                        deckId = 0;
+                    }
+                }
+            } while (deckIdString != null && deckId == 0);
         }
     }
 

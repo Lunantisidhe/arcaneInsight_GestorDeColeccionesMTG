@@ -285,6 +285,19 @@ public class DBManager {
 
     }
 
+    // elimina un mazo de la base de datos
+    public static void deleteDeck(String deckName) {
+
+        // conexion base de datos mongodb
+        Connection connection = new Connection(deckName);
+
+        // elimina el mazo
+        connection.getCollection().drop();
+
+        // cierra el objeto conexion
+        connection.close();
+    }
+
 
     /* METODOS ACTUALIZACION BD */
     // añade los datos de ultima importacion a la base de datos
