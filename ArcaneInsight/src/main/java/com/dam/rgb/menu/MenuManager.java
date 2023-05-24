@@ -134,12 +134,12 @@ public class MenuManager {
     }
 
     // 1.2 - tus mazos
-    private static void decks() {
+    private static void decks() { //TODO
 
         String[] options = {"Ver tus mazos", "Crear nuevo mazo", "Volver"};
 
         Runnable[] actions = {
-                () -> {}, //TODO
+                CardCRUDManager::viewDecks,
                 CardCRUDManager::createDeck,
                 () -> {}
         };

@@ -171,6 +171,19 @@ public class CardCRUDManager {
         }
     }
 
+    // muestra todos los mazos existentes en la base de datos
+    public static void viewDecks() {
+
+        ArrayList<String> deckNames = DBManager.recoverDecks();
+
+        if (deckNames.isEmpty())
+            System.out.println("No existe ningún mazo");
+
+        else
+            for (String deckName : deckNames)
+                System.out.println(deckName);
+    }
+
 
     /* METODOS BORRADO */
     // muestra las cartas de la coleccion y comprueba si se quiere eliminar alguna

@@ -13,6 +13,8 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.mongodb.client.model.Updates.set;
 
@@ -153,11 +155,11 @@ public class DBManager {
         Connection connection = new Connection();
 
         // el mazo ya existe
-        if (connection.getDatabase().listCollectionNames().into(new ArrayList<>()).contains(deckName))
+        if (connection.getDatabase().listCollectionNames().into(new ArrayList<>()).contains(deckName + "_deck"))
             System.out.println("El mazo " + deckName + " ya existe");
 
         else {
-            connection.setCollection(deckName);
+            connection.setCollection(deckName + "_deck");
 
             // crea un objeto con datos del mazo
             Document data = new Document().append("creation_date", LocalDateTime.now());
@@ -228,6 +230,22 @@ public class DBManager {
         connection.close();
 
         return searchResults;
+    }
+
+    // recupera todos los mazos existentes en la base de datos
+    public static ArrayList<String> recoverDecks() {
+
+        // conexion base de datos mongodb
+        Connection connection = new Connection();
+
+        // recupera los nombres de los mazos
+        List<String> deckNames = connection.getDatabase().listCollectionNames().into(new ArrayList<>())
+                .stream().filter(name -> name.endsWith("_deck")).collect(Collectors.toList());
+
+        // cierra el objeto conexion
+        connection.close();
+
+        return (ArrayList<String>) deckNames;
     }
 
 
