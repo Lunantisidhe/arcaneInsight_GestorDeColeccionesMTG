@@ -176,6 +176,36 @@ public class DBManager {
 
 
     /* METODOS LECTURA */
+    // busca una carta dentro de una coleccion y devuelve la cantidad encontrada
+    public static double searchCardInCollection(String cardParam, String searchField, String collectionName) { //TODO test
+
+        // conexion base de datos mongodb
+        Connection connection = new Connection(collectionName);
+
+        ArrayList<Document> searchResults = new ArrayList<>();
+        MongoCursor<Document> cursor = connection.getCollection().find().iterator();
+
+        double quantity = 0;
+
+        while (cursor.hasNext()) {
+
+            Document cardDoc = cursor.next();
+            String fieldValue = cardDoc.getString(searchField);
+
+            // si encontramos la carta, devolvemos true
+            if (cardParam.equals(fieldValue)) {
+                quantity = cardDoc.getDouble("quantity");
+                break;
+            }
+        }
+
+        // cierra los objetos
+        cursor.close();
+        connection.close();
+
+        return quantity;
+    }
+
     // recupera todas las cartas de una coleccion
     public static ArrayList<Document> recoverAllCards(String collectionName) {
 
@@ -199,7 +229,7 @@ public class DBManager {
 
     // recupera las cartas coincidentes de la base de datos
     public static ArrayList<Document> searchFuzzyCards
-        (String fuzzyCardName, String searchField, String collectionName, boolean firstCardOnly) {
+        (String fuzzyCardParam, String searchField, String collectionName, boolean firstCardOnly) {
 
         // conexion base de datos mongodb
         Connection connection = new Connection(collectionName);
@@ -213,7 +243,7 @@ public class DBManager {
             String fieldValue = cardDoc.getString(searchField);
 
             // si la similitud entre el campo a buscar y el recuperado es mayor al 80%, añadimos los resultados
-            if (FuzzySearch.extractOne(fuzzyCardName, Collections.singleton(fieldValue)).getScore() >= 80) {
+            if (FuzzySearch.extractOne(fuzzyCardParam, Collections.singleton(fieldValue)).getScore() >= 80) {
 
                 searchResults.add(cardDoc);
 

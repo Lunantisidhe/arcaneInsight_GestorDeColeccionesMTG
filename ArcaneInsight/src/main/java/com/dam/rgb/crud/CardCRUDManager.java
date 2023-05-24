@@ -210,7 +210,21 @@ public class CardCRUDManager {
 
                         else {
                             for (Document card : deckCards) {
-                                System.out.print("\n(x" + Math.round(card.getDouble("quantity")) + ") \n");
+
+                                double quantity = DBManager.searchCardInCollection(
+                                        card.getString("name"), "name", "collection");
+
+                                StringBuilder sb = new StringBuilder("\n(x")
+                                        .append(Math.round(card.getDouble("quantity"))).append(") (");
+
+                                if (quantity > 0)
+                                    sb.append(Math.round(quantity));
+                                else
+                                    sb.append("ninguna");
+
+                                sb.append(" en la colección)");
+                                System.out.println(sb);
+
                                 Printer.printCard(new JSONObject(card.toJson()), false);
                             }
                         }
@@ -271,7 +285,7 @@ public class CardCRUDManager {
     }
 
     // muestra los mazos de la coleccion y comprueba si se quiere eliminar alguno
-    public static void deleteDeck() {//TODO
+    public static void deleteDeck() {
 
         ArrayList<String> deckNames = DBManager.recoverDecks();
 
