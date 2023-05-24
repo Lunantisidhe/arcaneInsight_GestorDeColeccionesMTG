@@ -162,7 +162,7 @@ public class DBManager {
             connection.setCollection(deckName + "_deck");
 
             // crea un objeto con datos del mazo
-            Document data = new Document().append("creation_date", LocalDateTime.now());
+            Document data = new Document().append("data_type", "info").append("creation_date", LocalDateTime.now());
 
             // añade el documento a la coleccion de mongo
             connection.getCollection().insertOne(data);
@@ -186,7 +186,8 @@ public class DBManager {
         ArrayList<Document> allCards = new ArrayList<>();
         while (cursor.hasNext()) {
             Document document = cursor.next();
-            allCards.add(document);
+            if (document.getString("data_type") == null)
+                allCards.add(document);
         }
 
         // cierra los objetos
@@ -293,7 +294,7 @@ public class DBManager {
         Connection connection = new Connection("data");
 
         // insertamos los datos
-        Document data = new Document("last_update_date", updateDate);
+        Document data = new Document("data_type", "info").append("last_update_date", updateDate);
         connection.getCollection().insertOne(data);
 
         // cierra el objeto conexion

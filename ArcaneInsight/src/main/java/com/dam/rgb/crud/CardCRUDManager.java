@@ -2,6 +2,7 @@ package com.dam.rgb.crud;
 
 import com.dam.rgb.db.DBManager;
 import com.dam.rgb.db.utilities.CardViewEnum;
+import com.dam.rgb.menu.MenuManager;
 import com.dam.rgb.visual.Printer;
 import org.bson.Document;
 import org.json.JSONObject;
@@ -21,7 +22,7 @@ public class CardCRUDManager {
 
     /* METODOS CREACION */
     // busca una carta en la base de datos general y comprueba si se quiere añadir
-    public static void addCard() {
+    public static void addCard(String collectionName) {
 
         String cardName;
 
@@ -57,7 +58,7 @@ public class CardCRUDManager {
 
                                 // añade la carta a la coleccion
                                 DBManager.createCard(new JSONObject(search.get(cardId - 1).toJson()),
-                                        "collection", 1d);
+                                        collectionName, 1d);
                                 System.out.println("Se ha añadido tu carta.");
 
                             } catch (NumberFormatException | IndexOutOfBoundsException e) {
@@ -159,10 +160,12 @@ public class CardCRUDManager {
 
                 // segun la opcion, muestra las imagenes o solo los nombres de las cartas
                 if (cardViewEnum.equals(CardViewEnum.CARD)) {
+                    System.out.println();
                     Printer.printCard(new JSONObject(card.toJson()), false);
                 }
 
                 else if (cardViewEnum.equals(CardViewEnum.CARD_W_IMG)) { //TODO revisar cartas doble cara
+                    System.out.println();
                     Printer.printCard(new JSONObject(card.toJson()), true);
 
                 } else
@@ -182,9 +185,9 @@ public class CardCRUDManager {
         else {
             for (int i = 0; i < deckNames.size(); i++) {
                 String deckName = deckNames.get(i);
-                deckName = deckName.substring(0, deckName.length() - 5);
+                String croppedDeckName = deckName.substring(0, deckName.length() - 5);
 
-                System.out.println((i + 1) + " - " + deckName);
+                System.out.println((i + 1) + " - " + croppedDeckName);
             }
 
             String deckIdString;
@@ -196,20 +199,23 @@ public class CardCRUDManager {
                     try {
                         deckId = Integer.parseInt(deckIdString);
                         String deckName = deckNames.get(deckId - 1);
+                        String croppedDeckName = deckName.substring(0, deckName.length() - 5);
 
                         // visualiza el mazo
                         ArrayList<Document> deckCards = DBManager.recoverAllCards(deckName);
 
-                        deckName = deckName.substring(0, deckName.length() - 5);
-                        if (deckCards.size() <= 1)
-                            System.out.println("No existe ninguna carta en el deck " + deckName);
+                        if (deckCards.isEmpty())
+                            System.out.println("No existe ninguna carta en el deck " + croppedDeckName);
 
                         else {
                             for (Document card : deckCards) {
-                                System.out.print("\n(x" + Math.round(card.getDouble("quantity")) + ") ");
+                                System.out.print("\n(x" + Math.round(card.getDouble("quantity")) + ") \n");
                                 Printer.printCard(new JSONObject(card.toJson()), false);
                             }
                         }
+
+                        // gestion mazo
+                        MenuManager.deckManagement(deckName);
 
                     } catch (NumberFormatException | IndexOutOfBoundsException e) {
                         System.err.println("Error: el número introducido no es válido");
@@ -237,8 +243,7 @@ public class CardCRUDManager {
             for (int i = 0; i < allCards.size(); i++) {
                 Document card = allCards.get(i);
 
-                System.out.print("\n" + (i + 1));
-                System.out.println("\n(x" + Math.round(card.getDouble("quantity")) + ") ");
+                System.out.println("\n" + (i + 1) + " - (x" + Math.round(card.getDouble("quantity")) + ") ");
                 Printer.printCard(new JSONObject(card.toJson()), false);
             }
 
@@ -252,7 +257,7 @@ public class CardCRUDManager {
                         cardId = Integer.parseInt(cardIdString);
 
                         // elimina la carta de la coleccion
-                        DBManager.deleteCard(new JSONObject(allCards.get(cardId - 1).toJson()), "collection");
+                        DBManager.deleteCard(new JSONObject(allCards.get(cardId - 1).toJson()), collectionName);
                         System.out.println("Se ha eliminado tu carta.");
 
                     } catch (NumberFormatException | IndexOutOfBoundsException e) {

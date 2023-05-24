@@ -6,6 +6,8 @@
             1.1.3 - eliminar cartas
         1.2 - tus mazos
             1.2.1 - ver tus mazos
+                1.2.1.1 - añadir cartas
+                1.2.1.2 - eliminar cartas
             1.2.2 - crear nuevo mazo
 */
 
@@ -20,8 +22,6 @@ import java.util.Scanner;
 public class MenuManager {
 
     private static final Scanner SC = new Scanner(System.in);
-
-    private static boolean returns = false;
 
 
     // menu generico
@@ -57,14 +57,6 @@ public class MenuManager {
             else
                 System.err.println("Introduzca un parámetro válido.");
 
-
-            // caso regresar al menu principal
-            if (title.equals("Menú principal"))
-                returns = false;
-
-            if (returns)
-                running = false;
-
         } while (running);
     }
 
@@ -88,11 +80,11 @@ public class MenuManager {
     // 1.1 - tu coleccion
     public static void collection() {
 
-        String[] options = {"Ver tu colección", "Añadir cartas", "Eliminar cartas", "Cerrar sesión"};
+        String[] options = {"Ver tu colección", "Añadir cartas", "Eliminar cartas", "Volver"};
 
         Runnable[] actions = {
                 MenuManager::viewCollection,
-                MenuManager::addCards,
+                () -> addCards("collection"),
                 () -> CardCRUDManager.deleteCard("collection"),
                 () -> {}
         };
@@ -102,8 +94,6 @@ public class MenuManager {
 
     // 1.1.1 - ver coleccion
     private static void viewCollection() {
-
-        returns = true;
 
         String[] options = {"Solo nombres", "Formato carta", "Formato carta con imágenes", "Volver"};
 
@@ -118,14 +108,12 @@ public class MenuManager {
     }
 
     // 1.1.2 - añadir cartas
-    private static void addCards() {
-
-        returns = true;
+    private static void addCards(String collectionName) {
 
         String[] options = {"A mano", "Desde un archivo de texto", "Volver"};
 
         Runnable[] actions = {
-                CardCRUDManager::addCard,
+                () -> CardCRUDManager.addCard(collectionName),
                 CardCRUDManager::addCardsFromFile,
                 () -> {}
         };
@@ -134,7 +122,7 @@ public class MenuManager {
     }
 
     // 1.2 - tus mazos
-    private static void decks() { //TODO
+    private static void decks() {
 
         String[] options = {"Ver tus mazos", "Crear nuevo mazo", "Volver"};
 
@@ -145,5 +133,21 @@ public class MenuManager {
         };
 
         showMenu("Tus mazos", options, actions);
+    }
+
+    // 1.2.1 - ver tus mazos (gestion mazo)
+    public static void deckManagement(String deckName) {
+
+        String croppedDeckName = deckName.substring(0, deckName.length() - 5);
+
+        String[] options = {"Añadir cartas", "Eliminar cartas", "Volver"};
+
+        Runnable[] actions = {
+                () -> addCards(deckName),
+                () -> CardCRUDManager.deleteCard(deckName),
+                () -> {}
+        };
+
+        showMenu("Gestión " + croppedDeckName, options, actions);
     }
 }
