@@ -179,9 +179,45 @@ public class CardCRUDManager {
         if (deckNames.isEmpty())
             System.out.println("No existe ningún mazo");
 
-        else
-            for (String deckName : deckNames)
-                System.out.println(deckName);
+        else {
+            for (int i = 0; i < deckNames.size(); i++) {
+                String deckName = deckNames.get(i);
+                deckName = deckName.substring(0, deckName.length() - 5);
+
+                System.out.println((i + 1) + " - " + deckName);
+            }
+
+            String deckIdString;
+            int deckId = 0;
+            do {
+                deckIdString = textReturn("Introduce el número del deck a visualizar");
+
+                if (deckIdString != null) {
+                    try {
+                        deckId = Integer.parseInt(deckIdString);
+                        String deckName = deckNames.get(deckId - 1);
+
+                        // visualiza el mazo
+                        ArrayList<Document> deckCards = DBManager.recoverAllCards(deckName);
+
+                        deckName = deckName.substring(0, deckName.length() - 5);
+                        if (deckCards.size() <= 1)
+                            System.out.println("No existe ninguna carta en el deck " + deckName);
+
+                        else {
+                            for (Document card : deckCards) {
+                                System.out.print("\n(x" + Math.round(card.getDouble("quantity")) + ") ");
+                                Printer.printCard(new JSONObject(card.toJson()), false);
+                            }
+                        }
+
+                    } catch (NumberFormatException | IndexOutOfBoundsException e) {
+                        System.err.println("Error: el número introducido no es válido");
+                        deckId = 0;
+                    }
+                }
+            } while (deckIdString != null && deckId == 0);
+        }
     }
 
 
