@@ -142,9 +142,10 @@ public class MenuManager {
 
         String croppedDeckName = deckName.substring(0, deckName.length() - 5);
 
-        String[] options = {"Añadir cartas", "Eliminar cartas", "Volver"};
+        String[] options = {"Ver mazo", "Añadir cartas", "Eliminar cartas", "Volver"};
 
         Runnable[] actions = {
+                () -> CardCRUDManager.viewDeck(deckName),
                 () -> addCards(deckName),
                 () -> CardCRUDManager.deleteCard(deckName),
                 () -> {}

@@ -241,6 +241,38 @@ public class CardCRUDManager {
         }
     }
 
+    // muestra las cartas de un mazo
+    public static void viewDeck(String deckName) {//TODO
+
+        String croppedDeckName = deckName.substring(0, deckName.length() - 5);
+
+        ArrayList<Document> deckCards = DBManager.recoverAllCards(deckName);
+
+        if (deckCards.isEmpty())
+            System.out.println("No existe ninguna carta en el deck " + croppedDeckName);
+
+        else {
+            for (Document card : deckCards) {
+
+                double quantity = DBManager.searchCardInCollection(
+                        card.getString("name"), "name", "collection");
+
+                StringBuilder sb = new StringBuilder("\n(x")
+                        .append(Math.round(card.getDouble("quantity"))).append(") (");
+
+                if (quantity > 0)
+                    sb.append(Math.round(quantity));
+                else
+                    sb.append("ninguna");
+
+                sb.append(" en la colección)");
+                System.out.println(sb);
+
+                Printer.printCard(new JSONObject(card.toJson()), false);
+            }
+        }
+    }
+
 
     /* METODOS BORRADO */
     // muestra las cartas de la coleccion y comprueba si se quiere eliminar alguna

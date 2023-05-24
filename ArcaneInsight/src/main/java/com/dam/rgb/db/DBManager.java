@@ -177,7 +177,7 @@ public class DBManager {
 
     /* METODOS LECTURA */
     // busca una carta dentro de una coleccion y devuelve la cantidad encontrada
-    public static double searchCardInCollection(String cardParam, String searchField, String collectionName) { //TODO test
+    public static double searchCardInCollection(String cardParam, String searchField, String collectionName) {
 
         // conexion base de datos mongodb
         Connection connection = new Connection(collectionName);
