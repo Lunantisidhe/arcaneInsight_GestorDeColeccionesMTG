@@ -242,7 +242,7 @@ public class CardCRUDManager {
     }
 
     // muestra las cartas de un mazo
-    public static void viewDeck(String deckName) {//TODO
+    public static void viewDeck(String deckName) {
 
         String croppedDeckName = deckName.substring(0, deckName.length() - 5);
 
