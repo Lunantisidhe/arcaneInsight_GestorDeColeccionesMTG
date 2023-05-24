@@ -1,7 +1,12 @@
 /*  Estructura
-    1 - menu principal / main menu
-        1.1 - ver coleccion / view collection
-        1.2 - añadir cartas / add cards
+    1 - menu principal
+        1.1 - tu coleccion
+            1.1.1 - ver coleccion
+            1.1.2 - añadir cartas
+            1.1.3 - eliminar cartas
+        1.2 - tus mazos
+            1.2.1 - ver tus mazos
+            1.2.2 - crear nuevo mazo
 */
 
 package com.dam.rgb.menu;
@@ -66,12 +71,11 @@ public class MenuManager {
     // 1 - menu principal
     public static void mainMenu() {
 
-        String[] options = {"Ver tu colección", "Añadir cartas", "Eliminar cartas", "Cerrar sesión"};
+        String[] options = {"Tu colección", "Tus mazos", "Cerrar sesión"};
 
         Runnable[] actions = {
-                MenuManager::viewCollection,
-                MenuManager::addCards,
-                () -> CardCRUDManager.deleteCard("collection"),
+                MenuManager::collection,
+                MenuManager::decks,
                 () -> System.out.println("Ejecución finalizada.")
         };
 
@@ -81,7 +85,22 @@ public class MenuManager {
         SC.close();
     }
 
-    // 1.1 - ver coleccion
+    // 1.1 - tu coleccion
+    public static void collection() {
+
+        String[] options = {"Ver tu colección", "Añadir cartas", "Eliminar cartas", "Cerrar sesión"};
+
+        Runnable[] actions = {
+                MenuManager::viewCollection,
+                MenuManager::addCards,
+                () -> CardCRUDManager.deleteCard("collection"),
+                () -> {}
+        };
+
+        showMenu("Tu colección", options, actions);
+    }
+
+    // 1.1.1 - ver coleccion
     private static void viewCollection() {
 
         returns = true;
@@ -98,7 +117,7 @@ public class MenuManager {
         showMenu("Ver tu colección", options, actions);
     }
 
-    // 1.2 - añadir cartas
+    // 1.1.2 - añadir cartas
     private static void addCards() {
 
         returns = true;
@@ -112,5 +131,19 @@ public class MenuManager {
         };
 
         showMenu("Añadir cartas", options, actions);
+    }
+
+    // 1.2 - tus mazos
+    private static void decks() {
+
+        String[] options = {"Ver tus mazos", "Crear nuevo mazo", "Volver"};
+
+        Runnable[] actions = {
+                () -> {}, //TODO
+                CardCRUDManager::createDeck,
+                () -> {}
+        };
+
+        showMenu("Tus mazos", options, actions);
     }
 }

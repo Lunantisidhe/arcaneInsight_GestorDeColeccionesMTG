@@ -21,11 +21,23 @@ public class Connection {
         collection = database.getCollection(collectionName);
     }
 
+    public Connection() {
+
+        client = MongoClients.create();
+        database = client.getDatabase("arcaneInsightDB");
+    }
+
     public void close() {
         client.close();
     }
 
+    public MongoDatabase getDatabase() {
+        return database;
+    }
     public MongoCollection<Document> getCollection() {
         return collection;
+    }
+    public void setCollection(String collection) {
+        this.collection = database.getCollection(collection);
     }
 }

@@ -146,6 +146,32 @@ public class DBManager {
         }
     }
 
+    // crea un mazo en la base de datos
+    public static void createDeck(String deckName) {
+
+        // conexion base de datos mongodb
+        Connection connection = new Connection();
+
+        // el mazo ya existe
+        if (connection.getDatabase().listCollectionNames().into(new ArrayList<>()).contains(deckName))
+            System.out.println("El mazo " + deckName + " ya existe");
+
+        else {
+            connection.setCollection(deckName);
+
+            // crea un objeto con datos del mazo
+            Document data = new Document().append("creation_date", LocalDateTime.now());
+
+            // añade el documento a la coleccion de mongo
+            connection.getCollection().insertOne(data);
+
+            System.out.println("Se ha creado el mazo " + deckName);
+        }
+
+        // cierra el objeto conexion
+        connection.close();
+    }
+
 
     /* METODOS LECTURA */
     // recupera todas las cartas de una coleccion

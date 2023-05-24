@@ -18,6 +18,8 @@ public class CardCRUDManager {
 
     private static final Scanner SC = new Scanner(System.in);
 
+
+    /* METODOS CREACION */
     // busca una carta en la base de datos general y comprueba si se quiere añadir
     public static void addCard() {
 
@@ -128,6 +130,17 @@ public class CardCRUDManager {
         }
     }
 
+    // crea un mazo en la base de datos
+    public static void createDeck() {
+
+        String deckName = textReturn("Introduce el nombre del mazo a añadir");
+
+        if (deckName != null)
+            DBManager.createDeck(deckName);
+    }
+
+
+    /* METODOS LECTURA */
     // muestra todas las cartas de una coleccion
     public static void viewCards(String collectionName, CardViewEnum cardViewEnum) {
 
@@ -158,6 +171,8 @@ public class CardCRUDManager {
         }
     }
 
+
+    /* METODOS BORRADO */
     // muestra las cartas de la coleccion y comprueba si se quiere eliminar alguna
     public static void deleteCard(String collectionName) {
 
@@ -200,6 +215,8 @@ public class CardCRUDManager {
         }
     }
 
+
+    /* METODOS AUXILIARES */
     // comprueba si se desea o no volver en una insercion de texto
     private static String textReturn(String text) {
 
