@@ -4,20 +4,20 @@
             1.1.1 - ver coleccion
             1.1.2 - añadir cartas
             1.1.3 - eliminar cartas
-            1.1.4 - exportar coleccion TODO
+            1.1.4 - exportar coleccion
         1.2 - tus mazos
             1.2.1 - ver tus mazos
                 1.2.1.1 - ver mazo
                 1.2.1.2 - añadir cartas
                 1.2.1.3 - eliminar cartas
-                1.2.1.4 - exportar mazo TODO
+                1.2.1.4 - exportar mazo
             1.2.2 - crear nuevo mazo
             1.2.3 - eliminar mazo
         1.3 - tus wants
             1.3.1 - ver wants
             1.3.2 - añadir cartas
             1.3.3 - eliminar cartas
-            1.3.4 - exportar wants TODO
+            1.3.4 - exportar wants
 */
 
 package com.dam.rgb.menu;
@@ -112,9 +112,9 @@ public class MenuManager {
                 // 1.3.3 - eliminar cartas
                 () -> CardCRUDManager.deleteCard(collectionName),
 
-                () -> {
-                    System.out.println("export");
-                },
+                // 1.1.4 - exportar coleccion
+                // 1.3.4 - exportar wants
+                () -> CardCRUDManager.exportCardsToFile(collectionName),
 
                 () -> {}
         };
@@ -197,9 +197,8 @@ public class MenuManager {
                 // 1.2.1.3 - eliminar cartas
                 () -> CardCRUDManager.deleteCard(deckName),
 
-                () -> {
-                    System.out.println("export");
-                },
+                // 1.2.1.4 - exportar mazo
+                () -> CardCRUDManager.exportCardsToFile(deckName),
 
                 () -> {}
         };

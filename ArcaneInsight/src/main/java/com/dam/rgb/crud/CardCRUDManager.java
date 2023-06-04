@@ -8,6 +8,7 @@ import org.bson.Document;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,10 +16,11 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.stream.Stream;
 
 public class CardCRUDManager {
 
-    private static final Scanner SC = new Scanner(System.in);
+    public static Scanner SC = new Scanner(System.in);
 
 
     /* METODOS CREACION */
@@ -75,8 +77,9 @@ public class CardCRUDManager {
     }
 
     // añade cartas a la base de datos desde un fichero txt
-    public static void addCardsFromFile() {
+    public static void addCardsFromFile(String collectionName) {
 
+        System.out.print("El formato debe ser [cantidad] [nombre carta]");
         String pathStr = textReturn("Introduce el nombre o ruta del fichero");
 
         if (pathStr != null) {
@@ -117,7 +120,7 @@ public class CardCRUDManager {
                 br.close();
 
                 // añade los documentos a la coleccion de mongo
-                DBManager.createSeveralCards(cards, "collection");
+                DBManager.createSeveralCards(cards, collectionName);
                 System.out.println("Se han añadido " + cards.size() + " cartas a tu colección.");
 
             } catch (ArrayIndexOutOfBoundsException e) {
@@ -200,34 +203,9 @@ public class CardCRUDManager {
                     try {
                         deckId = Integer.parseInt(deckIdString);
                         String deckName = deckNames.get(deckId - 1);
-                        String croppedDeckName = deckName.substring(0, deckName.length() - 5);
 
                         // visualiza el mazo
-                        ArrayList<Document> deckCards = DBManager.recoverAllCards(deckName);
-
-                        if (deckCards.isEmpty())
-                            System.out.println("No existe ninguna carta en el deck " + croppedDeckName);
-
-                        else {
-                            for (Document card : deckCards) {
-
-                                double quantity = DBManager.searchCardInCollection(
-                                        card.getString("name"), "name", "collection");
-
-                                StringBuilder sb = new StringBuilder("\n(x")
-                                        .append(Math.round(card.getDouble("quantity"))).append(") (");
-
-                                if (quantity > 0)
-                                    sb.append(Math.round(quantity));
-                                else
-                                    sb.append("ninguna");
-
-                                sb.append(" en la colección)");
-                                System.out.println(sb);
-
-                                Printer.printCard(new JSONObject(card.toJson()), false);
-                            }
-                        }
+                        viewDeck(deckName);
 
                         // gestion mazo
                         MenuManager.deckManagement(deckName);
@@ -369,7 +347,7 @@ public class CardCRUDManager {
 
     /* METODOS AUXILIARES */
     // comprueba si se desea o no volver en una insercion de texto
-    private static String textReturn(String text) {
+    public static String textReturn(String text) {
 
         String input;
 
@@ -389,5 +367,50 @@ public class CardCRUDManager {
         } while (input.isBlank());
 
         return null;
+    }
+
+    // exporta cartas de la base de datos a un fichero txt
+    public static void exportCardsToFile(String collectionName) {
+
+        String pathStr = textReturn("Introduce el nombre o ruta del fichero");
+
+        if (pathStr != null) {
+
+            // si no tiene extension, se la añadimos
+            if (!pathStr.contains("."))
+                pathStr += ".txt";
+
+            // recuperamos las cartas de la coleccion
+            ArrayList<Document> cards = DBManager.recoverAllCards(collectionName);
+
+            if (cards.isEmpty())
+                System.out.println("No existe ninguna carta a exportar");
+
+            else {
+                Stream<String> cardsStream = cards.stream().map((Document card) ->
+                        Math.round(card.getDouble("quantity")) + " " + card.getString("name"));
+                Path destination = Paths.get(pathStr);
+                BufferedWriter bw;
+
+                try {
+                    bw = Files.newBufferedWriter(destination);
+
+                    // escritura
+                    cardsStream.forEach(line -> {
+                        try {
+                            bw.write(line + "\n");
+                        } catch (IOException e) {
+                            System.err.println("Error: problema al escribir el fichero.");
+                        }
+                    });
+
+                    bw.flush();
+                    bw.close();
+
+                } catch (IOException e) {
+                    System.err.println("Error: la ruta no es correcta.");
+                }
+            }
+        }
     }
 }
