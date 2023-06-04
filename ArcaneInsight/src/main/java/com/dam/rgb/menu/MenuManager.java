@@ -4,17 +4,20 @@
             1.1.1 - ver coleccion
             1.1.2 - añadir cartas
             1.1.3 - eliminar cartas
+            1.1.4 - exportar coleccion TODO
         1.2 - tus mazos
             1.2.1 - ver tus mazos
                 1.2.1.1 - ver mazo
                 1.2.1.2 - añadir cartas
                 1.2.1.3 - eliminar cartas
+                1.2.1.4 - exportar mazo TODO
             1.2.2 - crear nuevo mazo
             1.2.3 - eliminar mazo
         1.3 - tus wants
             1.3.1 - ver wants
             1.3.2 - añadir cartas
             1.3.3 - eliminar cartas
+            1.3.4 - exportar wants TODO
 */
 
 package com.dam.rgb.menu;
@@ -34,19 +37,25 @@ public class MenuManager {
     private static void showMenu(String title, String[] options, Runnable[] actions) {
 
         boolean running = true;
+        String selectionString;
         int selection;
 
         do {
             // impresion titulo y opciones menu
             System.out.println("\n" + title);
 
-            for (int i = 0; i < options.length; i++)
+            for (int i = 0; i < options.length - 1; i++)
                 System.out.println((i + 1) + " - " + options[i]);
+            System.out.println("X - " + options[options.length - 1]);
 
             // introduccion opcion
             try {
-                selection = SC.nextInt();
-            } catch (InputMismatchException e) {
+                selectionString = SC.nextLine();
+                if (!selectionString.equalsIgnoreCase("x"))
+                    selection = Integer.parseInt(selectionString);
+                else
+                    selection = options.length;
+            } catch (InputMismatchException | NumberFormatException e) {
                 selection = 0;
                 SC.next();
             }
@@ -86,14 +95,14 @@ public class MenuManager {
 
     // 1.1 - tu coleccion
     // 1.3 - tus wants
-    public static void collection(String collectionName) {//TODO
+    public static void collection(String collectionName) {
 
         StringBuilder sb = new StringBuilder("tu");
         if (collectionName.endsWith("s"))
             sb.append("s");
         sb.append(" ").append(collectionName);
 
-        String[] options = {"Ver " + sb, "Añadir cartas", "Eliminar cartas", "Volver"};
+        String[] options = {"Ver " + sb, "Añadir cartas", "Eliminar cartas", "Exportar " + sb, "Volver"};
 
         Runnable[] actions = {
                 () -> viewCollection(collectionName),
@@ -103,6 +112,10 @@ public class MenuManager {
                 // 1.3.3 - eliminar cartas
                 () -> CardCRUDManager.deleteCard(collectionName),
 
+                () -> {
+                    System.out.println("export");
+                },
+
                 () -> {}
         };
 
@@ -111,7 +124,7 @@ public class MenuManager {
 
     // 1.1.1 - ver coleccion
     // 1.3.1 - ver wants
-    private static void viewCollection(String collectionName) {//TODO
+    private static void viewCollection(String collectionName) {
 
         String[] options = {"Solo nombres", "Formato carta", "Formato carta con imágenes", "Volver"};
 
@@ -132,13 +145,13 @@ public class MenuManager {
 
     // 1.1.2 - añadir cartas
     // 1.3.2 - añadir cartas
-    private static void addCards(String collectionName) {//TODO
+    private static void addCards(String collectionName) {
 
         String[] options = {"A mano", "Desde un archivo de texto", "Volver"};
 
         Runnable[] actions = {
                 () -> CardCRUDManager.addCard(collectionName),
-                CardCRUDManager::addCardsFromFile,
+                () -> CardCRUDManager.addCardsFromFile(collectionName),
                 () -> {}
         };
 
@@ -171,7 +184,7 @@ public class MenuManager {
 
         String croppedDeckName = deckName.substring(0, deckName.length() - 5);
 
-        String[] options = {"Ver mazo", "Añadir cartas", "Eliminar cartas", "Volver"};
+        String[] options = {"Ver mazo", "Añadir cartas", "Eliminar cartas", "Exportar mazo", "Volver"};
 
         Runnable[] actions = {
 
@@ -183,6 +196,10 @@ public class MenuManager {
 
                 // 1.2.1.3 - eliminar cartas
                 () -> CardCRUDManager.deleteCard(deckName),
+
+                () -> {
+                    System.out.println("export");
+                },
 
                 () -> {}
         };
