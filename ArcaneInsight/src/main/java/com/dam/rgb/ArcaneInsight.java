@@ -1,11 +1,10 @@
 package com.dam.rgb;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.LoggerContext;
 import com.dam.rgb.db.BulkCardsImporter;
 import com.dam.rgb.menu.MenuManager;
 import com.dam.rgb.visual.Style;
-
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.LoggerContext;
 import org.slf4j.LoggerFactory;
 
 // lanzador aplicacion

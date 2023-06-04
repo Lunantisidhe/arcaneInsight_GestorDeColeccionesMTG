@@ -8,11 +8,17 @@ public class Style {
              /\\___/\\   /\\___/\\\s
             ( •   • ) ( o   o )\s
               /   \\     /   \\\s
-             /     \\   /     \\ \s
+             /     \\   /     \\\s
               arcane • insight
               
-              
             """;
+
+    public static final String[] LOADING_ANIM = {
+            "( •   • )",
+            "( ◡  ◡ )",
+            "( o   o )",
+            "( ◠  ◠ )"
+    };
 
     public static final char ASCII_PIXEL = '█';
     public static final String HORIZONTAL_BORDER = "═", VERTICAL_BORDER = "║", LIGHT_HORIZONTAL_BORDER = "─";

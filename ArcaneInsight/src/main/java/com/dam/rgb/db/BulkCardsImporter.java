@@ -1,6 +1,7 @@
 package com.dam.rgb.db;
 
 import com.dam.rgb.db.utilities.Connection;
+import com.dam.rgb.visual.LoadingAnimation;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,6 +38,7 @@ public class BulkCardsImporter {
 
         // comprobamos cual de las dos fechas es mas reciente
         System.out.println("Comprobando la versión de la base de datos...");
+
         if (bulkUpdateDate.isAfter(lastUpdatedDB)) {
 
             // base de datos no actualizada
@@ -44,9 +46,16 @@ public class BulkCardsImporter {
                     + bulkUpdateDate.format(formatter) + ").");
 
             System.out.println("Actualizando base de datos...");
+
+            // comienza la animacion de carga
+            LoadingAnimation.startAnimation();
+
             importAllDefaultCards(bulkData, bulkUpdateDate);
 
-            System.out.println("Se ha actualizado la base de datos a la versión más reciente.");
+            // termina la animacion de carga
+            LoadingAnimation.stopAnimation();
+
+            System.out.println("\nSe ha actualizado la base de datos a la versión más reciente.");
 
         // base de datos actualizada
         } else
