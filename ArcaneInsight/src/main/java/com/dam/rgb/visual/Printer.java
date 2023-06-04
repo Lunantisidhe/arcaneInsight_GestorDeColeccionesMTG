@@ -29,7 +29,7 @@ public class Printer {
 
                 for (int i = 0; i < 2; i++) {
                     JSONObject card = cardFaces.getJSONObject(i);
-                    if (image)
+                    if (image && (!json.optString("layout").contains("adventure") || i == 0))
                         printCardArt(json, card);
                     printCardFace(json, card, colorIdentity, (i == 0 ? CardPartEnum.TOP_HALF : CardPartEnum.BOTTOM_HALF));
                 }
