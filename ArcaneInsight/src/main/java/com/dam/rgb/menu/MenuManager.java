@@ -3,27 +3,30 @@
         1.1 - tu coleccion
             1.1.1 - ver coleccion
             1.1.2 - añadir cartas
-            1.1.3 - eliminar cartas
-            1.1.4 - exportar coleccion
+            1.1.3 - buscar cartas
+            1.1.4 - eliminar cartas
+            1.1.5 - exportar coleccion
         1.2 - tus mazos
             1.2.1 - ver tus mazos
                 1.2.1.1 - ver mazo
                 1.2.1.2 - añadir cartas
-                1.2.1.3 - eliminar cartas
-                1.2.1.4 - exportar mazo
+                1.2.1.3 - buscar cartas
+                1.2.1.4 - eliminar cartas
+                1.2.1.5 - exportar mazo
             1.2.2 - crear nuevo mazo
             1.2.3 - eliminar mazo
         1.3 - tus wants
             1.3.1 - ver wants
             1.3.2 - añadir cartas
-            1.3.3 - eliminar cartas
-            1.3.4 - exportar wants
+            1.3.3 - buscar cartas
+            1.3.4 - eliminar cartas
+            1.3.5 - exportar wants
 */
 
 package com.dam.rgb.menu;
 
 import com.dam.rgb.crud.CardCRUDManager;
-import com.dam.rgb.db.utilities.CardViewEnum;
+import com.dam.rgb.utilities.CardViewEnum;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -57,6 +60,7 @@ public class MenuManager {
                     selection = options.length;
             } catch (InputMismatchException | NumberFormatException e) {
                 selection = 0;
+                SC.reset();
             }
 
             // opcion salida del menu
@@ -68,8 +72,10 @@ public class MenuManager {
                 actions[selection - 1].run();
 
             // caso parametro incorrecto
-            else
+            else {
                 System.err.println("Introduzca un parámetro válido.");
+                SC.reset();
+            }
 
         } while (running);
     }
@@ -101,18 +107,22 @@ public class MenuManager {
             sb.append("s");
         sb.append(" ").append(collectionName);
 
-        String[] options = {"Ver " + sb, "Añadir cartas", "Eliminar cartas", "Exportar " + sb, "Volver"};
+        String[] options = {"Ver " + sb, "Añadir cartas", "Buscar cartas", "Eliminar cartas", "Exportar " + sb, "Volver"};
 
         Runnable[] actions = {
                 () -> viewCollection(collectionName),
                 () -> addCards(collectionName),
 
-                // 1.1.3 - eliminar cartas
-                // 1.3.3 - eliminar cartas
+                //1.1.3 - buscar cartas
+                //1.3.3 - buscar cartas
+                () -> CardCRUDManager.searchByParams(collectionName),
+
+                // 1.1.4 - eliminar cartas
+                // 1.3.4 - eliminar cartas
                 () -> CardCRUDManager.deleteCard(collectionName),
 
-                // 1.1.4 - exportar coleccion
-                // 1.3.4 - exportar wants
+                // 1.1.5 - exportar coleccion
+                // 1.3.5 - exportar wants
                 () -> CardCRUDManager.exportCardsToFile(collectionName),
 
                 () -> {}
@@ -183,20 +193,23 @@ public class MenuManager {
 
         String croppedDeckName = deckName.substring(0, deckName.length() - 5);
 
-        String[] options = {"Ver mazo", "Añadir cartas", "Eliminar cartas", "Exportar mazo", "Volver"};
+        String[] options = {"Ver mazo", "Añadir cartas", "Buscar cartas", "Eliminar cartas", "Exportar mazo", "Volver"};
 
         Runnable[] actions = {
 
                 // 1.2.1.1 - ver mazo
                 () -> CardCRUDManager.viewDeck(deckName),
 
-                // 1.2.1.1 - añadir cartas
+                // 1.2.1.2 - añadir cartas
                 () -> addCards(deckName),
 
-                // 1.2.1.3 - eliminar cartas
+                // 1.2.1.3 - buscar cartas
+                () -> CardCRUDManager.searchByParams(deckName),
+
+                // 1.2.1.4 - eliminar cartas
                 () -> CardCRUDManager.deleteCard(deckName),
 
-                // 1.2.1.4 - exportar mazo
+                // 1.2.1.5 - exportar mazo
                 () -> CardCRUDManager.exportCardsToFile(deckName),
 
                 () -> {}

@@ -1,7 +1,7 @@
 package com.dam.rgb.crud;
 
 import com.dam.rgb.db.DBManager;
-import com.dam.rgb.db.utilities.CardViewEnum;
+import com.dam.rgb.utilities.CardViewEnum;
 import com.dam.rgb.menu.MenuManager;
 import com.dam.rgb.visual.Printer;
 import org.bson.Document;
@@ -365,6 +365,52 @@ public class CardCRUDManager {
         }
     }
 
+    // busca cartas en una coleccion empleando filtros y las muestra
+    public static void searchByParams(String collectionName) {
+
+        // filtro busqueda
+        String searchField;
+
+        do {
+            searchField = textReturn("Introduce el filtro de búsqueda");
+
+            if (searchField == null)
+                return;
+
+            switch (searchField.toLowerCase()) {
+                case "name", "nombre" -> searchField = "name";
+                case "rarity", "rareza" -> searchField = "rarity";
+                case "type line", "type", "linea de tipo", "línea de tipo", "tipo" -> searchField = "type_line";
+                case "artist", "artista" -> searchField = "artist";
+                default -> searchField = null;
+            }
+
+            if (searchField == null) {
+                System.err.println("Error: filtro de búsqueda no válido.");
+                System.err.println("Los filtros válidos son:");
+                System.err.println("Name, Oracle text, Rarity, Color identity, Cmc, Type line, Artist y Flavor text");
+            }
+
+        } while (searchField == null);
+
+
+        // parametro busqueda
+        String fuzzyCardParam = textReturn("Introduce el parámetro a buscar");
+
+        if (fuzzyCardParam != null) {
+
+            ArrayList<Document> cards = DBManager.searchFuzzyCards(fuzzyCardParam, searchField,
+                    collectionName, false);
+
+            if (cards.isEmpty())
+                System.out.println("No se ha encontrado ninguna carta");
+
+            else
+                for (Document card : cards)
+                    Printer.printCard(new JSONObject(card.toJson()), false);
+        }
+    }
+
 
     /* METODOS BORRADO */
     // muestra las cartas de la coleccion y comprueba si se quiere eliminar alguna
@@ -480,7 +526,7 @@ public class CardCRUDManager {
 
         } while (input.isBlank());
 
-        return null;
+        return input;
     }
 
     // exporta cartas de la base de datos a un fichero txt
