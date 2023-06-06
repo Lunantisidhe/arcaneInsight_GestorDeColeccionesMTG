@@ -21,6 +21,7 @@
             1.3.3 - buscar cartas
             1.3.4 - eliminar cartas
             1.3.5 - exportar wants
+        1.4 - buscar cartas globales
 */
 
 package com.dam.rgb.menu;
@@ -83,12 +84,16 @@ public class MenuManager {
     // 1 - menu principal
     public static void mainMenu() {
 
-        String[] options = {"Tu colección", "Tus mazos", "Tus wants", "Cerrar sesión"};
+        String[] options = {"Tu colección", "Tus mazos", "Tus wants", "Buscar cartas globales", "Cerrar sesión"};
 
         Runnable[] actions = {
                 () -> collection("collection"),
                 MenuManager::decks,
                 () -> collection("wants"),
+
+                // 1.4 - buscar cartas globales
+                () -> CardCRUDManager.searchByParams("allCards"),
+
                 () -> System.out.println("Ejecución finalizada.")
         };
 
