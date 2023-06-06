@@ -1,6 +1,6 @@
 package com.dam.rgb.db;
 
-import com.dam.rgb.db.utilities.Connection;
+import com.dam.rgb.utilities.Connection;
 import com.google.gson.Gson;
 import com.mongodb.client.MongoCursor;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
@@ -242,18 +242,23 @@ public class DBManager {
             Document cardDoc = cursor.next();
             String fieldValue = cardDoc.getString(searchField);
 
-            // si la similitud entre el campo a buscar y el recuperado es mayor al 80%, añadimos los resultados
-            if (FuzzySearch.extractOne(fuzzyCardParam, Collections.singleton(fieldValue)).getScore() >= 80) {
+            // comprobamos que el campo existe en la carta
+            if (fieldValue != null)
 
-                searchResults.add(cardDoc);
+                // si la similitud entre el campo a buscar y el recuperado es mayor al 80%, añadimos los resultados
+                if (FuzzySearch.extractOne(fuzzyCardParam, Collections.singleton(fieldValue)).getScore() >= 80) {
 
-                if (firstCardOnly)
-                    break;
+                    // no añade cartas vacias
+                    if (!cardDoc.getString("type_line").contains("Card"))
+                        searchResults.add(cardDoc);
 
-                // limite resultados
-                else if (searchResults.size() >= SEARCH_LIMIT)
-                    break;
-            }
+                    if (firstCardOnly)
+                        break;
+
+                    // limite resultados
+                    else if (searchResults.size() >= SEARCH_LIMIT)
+                        break;
+                }
         }
 
         // cierra los objetos
