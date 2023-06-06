@@ -264,4 +264,10 @@ public class Printer {
             }
         }
     }
+
+    // imprime texto formateado en 3 columnas de 20 caracteres
+    public static void printFormatted(String leftColumn, String middleColumn, String rightColumn) {
+
+        System.out.printf("%-20s %-20s %-20s%n", leftColumn, middleColumn, rightColumn);
+    }
 }

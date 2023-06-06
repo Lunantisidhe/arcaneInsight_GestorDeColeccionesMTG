@@ -121,7 +121,7 @@ public class CardCRUDManager {
 
                 // añade los documentos a la coleccion de mongo
                 DBManager.createSeveralCards(cards, collectionName);
-                System.out.println("Se han añadido " + cards.size() + " cartas a tu colección.");
+                System.out.println("Se han añadido " + cards.size() + " cartas.");
 
             } catch (ArrayIndexOutOfBoundsException e) {
                 System.err.println("\nError: parámetro no válido: " + parts[0]);
@@ -230,16 +230,83 @@ public class CardCRUDManager {
             System.out.println("No existe ninguna carta en el deck " + croppedDeckName);
 
         else {
+
+            // cartas segun color, tipo y tipo de tierra
+            int whiteCards = 0, blueCards = 0, blackCards = 0, redCards = 0, greenCards = 0, colorlessCards = 0;
+            int landCards = 0, creatureCards = 0, instantCards = 0, sorceryCards = 0, artifactCards = 0,
+                    enchantmentCards = 0, planeswalkerCards = 0, otherCardTypes = 0;
+            int plainsCards = 0, islandCards = 0, swampCards = 0, mountainCards = 0, forestCards = 0, otherLandCards = 0;
+
+
             for (Document card : deckCards) {
 
-                double quantity = DBManager.searchCardInCollection(
+                double quantity = card.getDouble("quantity");
+
+                // suma cartas segun color
+                ArrayList<String> colores = (ArrayList<String>) card.get("color_identity");
+
+                if (colores.isEmpty())
+                    colorlessCards += quantity;
+
+                else
+                    for (String color : colores)
+                        switch (color) {
+                            case "W" -> whiteCards += quantity;
+                            case "U" -> blueCards += quantity;
+                            case "B" -> blackCards += quantity;
+                            case "R" -> redCards += quantity;
+                            case "G" -> greenCards += quantity;
+                        }
+
+                // suma cartas segun tipo
+                String type = card.getString("type_line");
+
+                if (type.contains("Land")) {
+
+                    landCards += quantity;
+
+                    if (type.contains("Basic")) {
+                        if (type.contains("Plains"))
+                            plainsCards+= quantity;
+                        else if (type.contains("Island"))
+                            islandCards+= quantity;
+                        else if (type.contains("Swamp"))
+                            swampCards+= quantity;
+                        else if (type.contains("Mountain"))
+                            mountainCards+= quantity;
+                        else if (type.contains("Forest"))
+                            forestCards+= quantity;
+                        else
+                            otherLandCards+= quantity;
+
+                    } else
+                        otherLandCards+= quantity;
+
+                } else if (type.contains("Creature"))
+                    creatureCards+= quantity;
+                else if (type.contains("Instant"))
+                    instantCards+= quantity;
+                else if (type.contains("Sorcery"))
+                    sorceryCards+= quantity;
+                else if (type.contains("Artifact"))
+                    artifactCards+= quantity;
+                else if (type.contains("Enchantment"))
+                    enchantmentCards+= quantity;
+                else if (type.contains("Planeswalker"))
+                    planeswalkerCards+= quantity;
+                else
+                    otherCardTypes+= quantity;
+
+
+                // impresion carta
+                double quantityInCollection = DBManager.searchCardInCollection(
                         card.getString("name"), "name", "collection");
 
                 StringBuilder sb = new StringBuilder("\n(x")
                         .append(Math.round(card.getDouble("quantity"))).append(") (");
 
-                if (quantity > 0)
-                    sb.append(Math.round(quantity));
+                if (quantityInCollection > 0)
+                    sb.append(Math.round(quantityInCollection));
                 else
                     sb.append("ninguna");
 
@@ -248,6 +315,32 @@ public class CardCRUDManager {
 
                 Printer.printCard(new JSONObject(card.toJson()), false);
             }
+
+            // impresion estadisticas
+            System.out.println("\nEstadísticas\n");
+
+            Printer.printFormatted("Cartas por color", "Cartas por tipo", "Tierras por tipo");
+
+            Printer.printFormatted("Blancas: " + whiteCards,
+                    "Tierras: " + landCards,
+                    "Llanuras: " + plainsCards);
+            Printer.printFormatted("Azules: " + blueCards,
+                    "Criaturas: " + creatureCards,
+                    "Islas: " + islandCards);
+            Printer.printFormatted("Negras: " + blackCards,
+                    "Instantáneos: " + instantCards,
+                    "Pantanos: " + swampCards);
+            Printer.printFormatted("Rojas: " + redCards,
+                    "Conjuros: " + sorceryCards,
+                    "Montañas: " + mountainCards);
+            Printer.printFormatted("Verdes: " + greenCards,
+                    "Artefactos: " + artifactCards,
+                    "Bosques: " + forestCards);
+            Printer.printFormatted("Incoloras: " + colorlessCards,
+                    "Encantamientos: " + enchantmentCards,
+                    "Otras: " + otherLandCards);
+            Printer.printFormatted("", "Planeswalkers: " + planeswalkerCards, "");
+            Printer.printFormatted("", "Otras: " + otherCardTypes, "");
         }
     }
 
