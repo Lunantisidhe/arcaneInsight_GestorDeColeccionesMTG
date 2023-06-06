@@ -25,7 +25,7 @@ public class CardCRUDManager {
 
     /* METODOS CREACION */
     // busca una carta en la base de datos general y comprueba si se quiere añadir
-    public static void addCard(String collectionName) {
+    public static void addCards(String collectionName) {
 
         String cardName;
 
@@ -52,6 +52,8 @@ public class CardCRUDManager {
 
                     String cardIdString;
                     int cardId = 0;
+                    String quantityString;
+                    int quantity = 0;
                     do {
                         cardIdString = textReturn("Introduce el número de la carta a añadir");
 
@@ -59,10 +61,29 @@ public class CardCRUDManager {
                             try {
                                 cardId = Integer.parseInt(cardIdString);
 
-                                // añade la carta a la coleccion
-                                DBManager.createCard(new JSONObject(search.get(cardId - 1).toJson()),
-                                        collectionName, 1d);
-                                System.out.println("Se ha añadido tu carta.");
+                                // introduccion cantidad de cartas
+                                do {
+                                    quantityString = textReturn("Introduce la cantidad de cartas a añadir");
+
+                                    if (quantityString != null) {
+
+                                        try {
+                                            quantity = Integer.parseInt(quantityString);
+
+                                            if (quantity < 1 || quantity > 999999)
+                                                throw new NumberFormatException();
+
+                                            // añade la carta a la coleccion
+                                            DBManager.createCard(new JSONObject(search.get(cardId - 1).toJson()),
+                                                    collectionName, quantity);
+                                            System.out.println("Se ha añadido tu carta.");
+
+                                        } catch (NumberFormatException e) {
+                                            System.err.println("Error: el número introducido no es válido");
+                                            quantity = 0;
+                                        }
+                                    }
+                                } while (quantityString != null && quantity == 0);
 
                             } catch (NumberFormatException | IndexOutOfBoundsException e) {
                                 System.err.println("Error: el número introducido no es válido");

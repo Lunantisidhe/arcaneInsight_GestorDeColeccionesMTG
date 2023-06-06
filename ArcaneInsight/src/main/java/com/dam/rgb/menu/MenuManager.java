@@ -149,7 +149,7 @@ public class MenuManager {
         String[] options = {"A mano", "Desde un archivo de texto", "Volver"};
 
         Runnable[] actions = {
-                () -> CardCRUDManager.addCard(collectionName),
+                () -> CardCRUDManager.addCards(collectionName),
                 () -> CardCRUDManager.addCardsFromFile(collectionName),
                 () -> {}
         };
