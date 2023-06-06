@@ -1,4 +1,4 @@
-package com.dam.rgb.db.utilities;
+package com.dam.rgb.utilities;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;

@@ -1,6 +1,6 @@
 package com.dam.rgb.db;
 
-import com.dam.rgb.db.utilities.Connection;
+import com.dam.rgb.utilities.Connection;
 import com.dam.rgb.visual.LoadingAnimation;
 import org.json.JSONArray;
 import org.json.JSONException;

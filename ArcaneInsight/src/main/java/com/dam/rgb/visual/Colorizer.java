@@ -1,6 +1,6 @@
 package com.dam.rgb.visual;
 
-import com.dam.rgb.visual.enums.ColorEnum;
+import com.dam.rgb.utilities.ColorEnum;
 import org.json.JSONArray;
 
 import java.util.Map;
