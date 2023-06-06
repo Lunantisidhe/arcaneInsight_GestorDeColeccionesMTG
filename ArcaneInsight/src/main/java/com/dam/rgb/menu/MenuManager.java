@@ -29,12 +29,13 @@ package com.dam.rgb.menu;
 import com.dam.rgb.crud.CardCRUDManager;
 import com.dam.rgb.utilities.CardViewEnum;
 
+import java.nio.charset.StandardCharsets;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class MenuManager {
 
-    private static final Scanner SC = new Scanner(System.in);
+    private static final Scanner SC = new Scanner(System.in, StandardCharsets.UTF_8);
 
 
     // menu generico

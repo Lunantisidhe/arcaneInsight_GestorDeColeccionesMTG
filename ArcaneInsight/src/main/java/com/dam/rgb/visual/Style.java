@@ -14,10 +14,10 @@ public class Style {
             """;
 
     public static final String[] LOADING_ANIM = {
-            "( •   • )",
-            "( ◡  ◡ )",
-            "( o   o )",
-            "( ◠  ◠ )"
+            "( •   • ) ",
+            "( ◡   ◡ ) ",
+            "( o   o ) ",
+            "( ◠   ◠ ) "
     };
 
     public static final char ASCII_PIXEL = '█';
