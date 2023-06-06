@@ -57,7 +57,6 @@ public class MenuManager {
                     selection = options.length;
             } catch (InputMismatchException | NumberFormatException e) {
                 selection = 0;
-                SC.next();
             }
 
             // opcion salida del menu
