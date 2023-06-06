@@ -1,8 +1,8 @@
 package com.dam.rgb.visual;
 
-import com.dam.rgb.visual.enums.CardPartEnum;
-import com.dam.rgb.visual.enums.ColorEnum;
-import com.dam.rgb.visual.enums.CardBorderEnum;
+import com.dam.rgb.utilities.CardPartEnum;
+import com.dam.rgb.utilities.ColorEnum;
+import com.dam.rgb.utilities.CardBorderEnum;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 import static com.dam.rgb.visual.Style.*;
-import static com.dam.rgb.visual.enums.CardBorderEnum.*;
+import static com.dam.rgb.utilities.CardBorderEnum.*;
 
 public class Printer {
 
@@ -74,7 +74,7 @@ public class Printer {
 
         // textos
         squishText(card, card.optString("oracle_text"), colorIdentity, false);
-        if (!card.optString("oracle_text").isEmpty() && !card.optString("flavor_text").isEmpty())
+        if (card.optBoolean("textless"))
             printJustified("", "", colorIdentity, false);
         squishText(card, card.optString("flavor_text"), colorIdentity, true);
 
