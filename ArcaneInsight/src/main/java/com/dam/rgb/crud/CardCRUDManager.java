@@ -583,10 +583,10 @@ public class CardCRUDManager {
         DBManager.createDeck("Yorion blink EDH");
 
         String[][] pathsStr = {
-                {"collection", "test_data/testData_collection.txt"},
-                {"wants", "test_data/testData_wants.txt"},
-                {"Mono-red aggro_deck", "test_data/testData_deck1.txt"},
-                {"Yorion blink EDH_deck", "test_data/testData_deck2.txt"}
+                {"collection", "../test_data/testData_collection.txt"},
+                {"wants", "../test_data/testData_wants.txt"},
+                {"Mono-red aggro_deck", "../test_data/testData_deck1.txt"},
+                {"Yorion blink EDH_deck", "../test_data/testData_deck2.txt"}
         };
         ArrayList<Document> cards = new ArrayList<>();
 
