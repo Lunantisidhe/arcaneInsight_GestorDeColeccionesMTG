@@ -130,13 +130,12 @@ public class DBManager {
                 cardsToAdd.add(cardDoc);
 
                 // si la carta ya existe, añadimos a su cantidad
-                for (Document doc : connection.getCollection().find()) {
+                for (Document doc : connection.getCollection().find())
                     if (cardDoc.getString("name").equals(doc.getString("name"))) {
                         connection.getCollection().updateOne(doc, set("quantity",
                                 doc.getDouble("quantity") + cardDoc.getDouble("quantity")));
                         cardsToAdd.remove(cardDoc);
                     }
-                }
             }
 
             // añade los documentos a la coleccion de mongo
@@ -182,7 +181,6 @@ public class DBManager {
         // conexion base de datos mongodb
         Connection connection = new Connection(collectionName);
 
-        ArrayList<Document> searchResults = new ArrayList<>();
         MongoCursor<Document> cursor = connection.getCollection().find().iterator();
 
         double quantity = 0;
@@ -248,9 +246,7 @@ public class DBManager {
                 // si la similitud entre el campo a buscar y el recuperado es mayor al 80%, añadimos los resultados
                 if (FuzzySearch.extractOne(fuzzyCardParam, Collections.singleton(fieldValue)).getScore() >= 80) {
 
-                    // no añade cartas vacias
-                    if (!cardDoc.getString("type_line").contains("Card"))
-                        searchResults.add(cardDoc);
+                    searchResults.add(cardDoc);
 
                     if (firstCardOnly)
                         break;

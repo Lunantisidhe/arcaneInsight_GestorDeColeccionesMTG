@@ -120,8 +120,10 @@ public class BulkCardsImporter {
 
             StringBuilder response = new StringBuilder();
             String line;
-            while ((line = reader.readLine()) != null)
-                response.append(line);
+            while ((line = reader.readLine()) != null) {
+                if (!line.contains("memorabilia"))
+                    response.append(line);
+            }
             reader.close();
 
             String json = response.toString();
