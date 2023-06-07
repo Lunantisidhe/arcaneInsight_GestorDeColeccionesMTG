@@ -389,7 +389,7 @@ public class CardCRUDManager {
             if (searchField == null) {
                 System.err.println("Error: filtro de búsqueda no válido.");
                 System.err.println("Los filtros válidos son:");
-                System.err.println("Name, Oracle text, Rarity, Color identity, Cmc, Type line, Artist y Flavor text");
+                System.err.println("Name, Rarity, Type line y Artist");
             }
 
         } while (searchField == null);
@@ -491,8 +491,10 @@ public class CardCRUDManager {
                             if (confirmation == null)
                                 break;
 
-                            if (Objects.requireNonNull(confirmation).equalsIgnoreCase(croppedDeckName))
+                            if (Objects.requireNonNull(confirmation).equalsIgnoreCase(croppedDeckName)) {
                                 DBManager.deleteDeck(deckName);
+                                System.out.println("El mazo " + croppedDeckName + " se ha eliminado correctamente.");
+                            }
 
                         } while (!Objects.requireNonNull(confirmation).equalsIgnoreCase(croppedDeckName));
 
@@ -567,6 +569,8 @@ public class CardCRUDManager {
 
                     bw.flush();
                     bw.close();
+
+                    System.out.println("Se han exportado tus cartas correctamente.");
 
                 } catch (IOException e) {
                     System.err.println("Error: la ruta no es correcta.");
