@@ -5,15 +5,13 @@ import com.google.gson.Gson;
 import com.mongodb.client.MongoCursor;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
 import org.bson.Document;
+import org.jgrapht.alg.util.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.mongodb.client.model.Updates.set;
@@ -232,7 +230,7 @@ public class DBManager {
         // conexion base de datos mongodb
         Connection connection = new Connection(collectionName);
 
-        ArrayList<Document> searchResults = new ArrayList<>();
+        ArrayList<Pair<Document, Integer>> searchResults = new ArrayList<>();
         MongoCursor<Document> cursor = connection.getCollection().find().iterator();
 
         while (cursor.hasNext()) {
@@ -241,27 +239,37 @@ public class DBManager {
             String fieldValue = cardDoc.getString(searchField);
 
             // comprobamos que el campo existe en la carta
-            if (fieldValue != null)
+            if (fieldValue != null) {
+
+                int match = FuzzySearch.extractOne(fuzzyCardParam, Collections.singleton(fieldValue)).getScore();
 
                 // si la similitud entre el campo a buscar y el recuperado es mayor al 80%, añadimos los resultados
-                if (FuzzySearch.extractOne(fuzzyCardParam, Collections.singleton(fieldValue)).getScore() >= 80) {
-
-                    searchResults.add(cardDoc);
-
-                    if (firstCardOnly)
-                        break;
-
-                    // limite resultados
-                    else if (searchResults.size() >= SEARCH_LIMIT)
-                        break;
-                }
+                if (match >= 80)
+                    searchResults.add(new Pair<>(cardDoc, match));
+            }
         }
 
         // cierra los objetos
         cursor.close();
         connection.close();
 
-        return searchResults;
+        // ordena las cartas por porcentaje de coincidencia
+        searchResults.sort((left, right) -> right.getSecond().compareTo(left.getSecond()));
+
+        // recupera los documentos de la lista
+        ArrayList<Document> documents = new ArrayList<>();
+        for (Pair<Document, Integer> pair : searchResults)
+            documents.add(pair.getFirst());
+
+        // limite resultados
+        if (documents.size() > SEARCH_LIMIT)
+            documents = new ArrayList<>(documents.subList(0, 50));
+
+        // si se pide solo el primer documento, mantiene solo ese
+        if (firstCardOnly)
+            documents = new ArrayList<>(documents.subList(0, 1));
+
+        return documents;
     }
 
     // recupera todos los mazos existentes en la base de datos
