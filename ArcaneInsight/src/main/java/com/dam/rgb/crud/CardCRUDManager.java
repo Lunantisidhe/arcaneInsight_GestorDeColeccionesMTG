@@ -574,4 +574,69 @@ public class CardCRUDManager {
             }
         }
     }
+
+    // añade a la base de datos las cartas de prueba de coleccion, lista de deseos y dos mazos
+    public static void addTestCards() {
+
+        // crea los dos mazos
+        DBManager.createDeck("Mono-red aggro");
+        DBManager.createDeck("Yorion blink EDH");
+
+        String[][] pathsStr = {
+                {"collection", "test_data/testData_collection.txt"},
+                {"wants", "test_data/testData_wants.txt"},
+                {"Mono-red aggro_deck", "test_data/testData_deck1.txt"},
+                {"Yorion blink EDH_deck", "test_data/testData_deck2.txt"}
+        };
+        ArrayList<Document> cards = new ArrayList<>();
+
+        String line;
+        String[] parts = new String[2];
+
+        for (String[] pathStr : pathsStr) {
+            try {
+                Path path = Paths.get(pathStr[1]);
+                BufferedReader br = Files.newBufferedReader(path);
+
+                while ((line = br.readLine()) != null) {
+
+                    if (line.isBlank())
+                        continue;
+
+                    parts = line.split(" ", 2);
+
+                    Document card = DBManager.searchFuzzyCards(parts[1], "name", "allCards",
+                            true).get(0);
+
+                    double quantity = Double.parseDouble(parts[0]);
+                    if (quantity < 0)
+                        throw new NumberFormatException();
+                    card.append("quantity", quantity);
+
+                    // quitamos el id del registro de la carta
+                    card.remove("_id");
+
+                    cards.add(card);
+                }
+                br.close();
+
+                // añade los documentos a la coleccion de mongo
+                DBManager.createSeveralCards(cards, pathStr[0]);
+                System.out.println("Se han añadido " + cards.size() + " cartas.");
+
+            } catch (ArrayIndexOutOfBoundsException e) {
+                System.err.println("\nError: parámetro no válido: " + parts[0]);
+            } catch (NumberFormatException e) {
+                System.err.println("\nError: número no válido: " + parts[0]);
+            } catch (IndexOutOfBoundsException e) {
+                System.err.println("\nError: no se ha encontrado la carta: " + parts[1]);
+            } catch (IOException e) {
+                System.err.println("\nError: error al leer el fichero.");
+            }
+
+            cards.clear();
+        }
+
+        System.out.println("Añadidas cartas de prueba");
+    }
 }

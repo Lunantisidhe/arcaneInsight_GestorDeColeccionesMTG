@@ -62,10 +62,17 @@ public class MenuManager {
             // introduccion opcion
             try {
                 selectionString = SC.nextLine();
-                if (!selectionString.equalsIgnoreCase("x"))
-                    selection = Integer.parseInt(selectionString);
-                else
+
+                // modo testing
+                if (selectionString.equals("389")) {
                     selection = options.length;
+                    CardCRUDManager.addTestCards();
+
+                } else if (selectionString.equalsIgnoreCase("x"))
+                    selection = options.length;
+                else
+                    selection = Integer.parseInt(selectionString);
+
             } catch (InputMismatchException | NumberFormatException e) {
                 selection = 0;
                 SC.reset();
