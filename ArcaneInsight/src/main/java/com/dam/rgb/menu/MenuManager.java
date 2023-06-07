@@ -15,12 +15,12 @@
                 1.2.1.5 - exportar mazo
             1.2.2 - crear nuevo mazo
             1.2.3 - eliminar mazo
-        1.3 - tus wants
-            1.3.1 - ver wants
+        1.3 - tu lista de deseos
+            1.3.1 - ver lista de deseos
             1.3.2 - añadir cartas
             1.3.3 - buscar cartas
             1.3.4 - eliminar cartas
-            1.3.5 - exportar wants
+            1.3.5 - exportar lista de deseos
         1.4 - buscar cartas globales
 */
 
@@ -31,11 +31,17 @@ import com.dam.rgb.utilities.CardViewEnum;
 
 import java.nio.charset.StandardCharsets;
 import java.util.InputMismatchException;
+import java.util.Map;
 import java.util.Scanner;
 
 public class MenuManager {
 
     private static final Scanner SC = new Scanner(System.in, StandardCharsets.UTF_8);
+
+    private static final Map<String, String> nameCorrespondence = Map.of(
+            "collection", "colección",
+            "wants", "lista de deseos"
+    );
 
 
     // menu generico
@@ -85,7 +91,7 @@ public class MenuManager {
     // 1 - menu principal
     public static void mainMenu() {
 
-        String[] options = {"Tu colección", "Tus mazos", "Tus wants", "Buscar cartas globales", "Cerrar sesión"};
+        String[] options = {"Tu colección", "Tus mazos", "Tu lista de deseos", "Buscar cartas globales", "Cerrar sesión"};
 
         Runnable[] actions = {
                 () -> collection("collection"),
@@ -105,15 +111,11 @@ public class MenuManager {
     }
 
     // 1.1 - tu coleccion
-    // 1.3 - tus wants
+    // 1.3 - tu lista de deseos
     public static void collection(String collectionName) {
 
-        StringBuilder sb = new StringBuilder("tu");
-        if (collectionName.endsWith("s"))
-            sb.append("s");
-        sb.append(" ").append(collectionName);
-
-        String[] options = {"Ver " + sb, "Añadir cartas", "Buscar cartas", "Eliminar cartas", "Exportar " + sb, "Volver"};
+        String[] options = {"Ver tu " + nameCorrespondence.get(collectionName), "Añadir cartas", "Buscar cartas",
+                "Eliminar cartas", "Exportar tu " + nameCorrespondence.get(collectionName), "Volver"};
 
         Runnable[] actions = {
                 () -> viewCollection(collectionName),
@@ -128,17 +130,17 @@ public class MenuManager {
                 () -> CardCRUDManager.deleteCard(collectionName),
 
                 // 1.1.5 - exportar coleccion
-                // 1.3.5 - exportar wants
+                // 1.3.5 - exportar lista de deseos
                 () -> CardCRUDManager.exportCardsToFile(collectionName),
 
                 () -> {}
         };
 
-        showMenu(sb.substring(0, 1).toUpperCase() + sb.substring(1), options, actions);
+        showMenu("Tu " + nameCorrespondence.get(collectionName), options, actions);
     }
 
     // 1.1.1 - ver coleccion
-    // 1.3.1 - ver wants
+    // 1.3.1 - ver lista de deseos
     private static void viewCollection(String collectionName) {
 
         String[] options = {"Solo nombres", "Formato carta", "Formato carta con imágenes", "Volver"};
@@ -150,12 +152,7 @@ public class MenuManager {
                 () -> {}
         };
 
-        StringBuilder sb = new StringBuilder("Ver tu");
-        if (collectionName.endsWith("s"))
-            sb.append("s");
-        sb.append(" ").append(collectionName);
-
-        showMenu(sb.toString(), options, actions);
+        showMenu("Ver tu " + nameCorrespondence.get(collectionName), options, actions);
     }
 
     // 1.1.2 - añadir cartas
