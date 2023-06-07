@@ -4,8 +4,8 @@ import com.dam.rgb.utilities.Connection;
 import com.google.gson.Gson;
 import com.mongodb.client.MongoCursor;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
+import org.apache.commons.lang3.tuple.Pair;
 import org.bson.Document;
-import org.jgrapht.alg.util.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -245,7 +245,7 @@ public class DBManager {
 
                 // si la similitud entre el campo a buscar y el recuperado es mayor al 80%, añadimos los resultados
                 if (match >= 80)
-                    searchResults.add(new Pair<>(cardDoc, match));
+                    searchResults.add(Pair.of(cardDoc, match));
             }
         }
 
@@ -254,12 +254,12 @@ public class DBManager {
         connection.close();
 
         // ordena las cartas por porcentaje de coincidencia
-        searchResults.sort((left, right) -> right.getSecond().compareTo(left.getSecond()));
+        searchResults.sort((left, right) -> right.getRight().compareTo(left.getRight()));
 
         // recupera los documentos de la lista
         ArrayList<Document> documents = new ArrayList<>();
         for (Pair<Document, Integer> pair : searchResults)
-            documents.add(pair.getFirst());
+            documents.add(pair.getLeft());
 
         // limite resultados
         if (documents.size() > SEARCH_LIMIT)
