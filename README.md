@@ -7,11 +7,11 @@ arcane insight es una aplicación diseñada para brindar información y herramie
 
 Esta guía te proporcionará las instrucciones necesarias para asegurarte de que la aplicación funcione correctamente en tu entorno.
 
-Si necesitas ver las capturas del proceso de instalación o de los ejemplos de uso, te recomendamos la versión con imágenes embebidas en formato .pdf de esta guía existente en la raíz.
+Si necesitas ver las capturas del proceso de instalación o de los ejemplos de uso, te recomendamos la versión con imágenes embebidas en formato .pdf de esta guía existente en la raíz ("GuiaInstalacionUso.pdf").
 
 ### Instalación
 
-1. Clona o descarga el repositorio de arcane insight desde https://github.com/Lunantisidhe/ProyectoFinDeCicloDAM.
+1. Clona o descarga el repositorio de arcane insight desde https://github.com/Lunantisidhe/ProyectoFinDeCicloDAM y descomprime el fichero .zip empleando cualquier programa de extracción como 7-Zip o WinRAR. Algunas versiones de Windows incluyen también esta opción de forma nativa.
 
     Aquí puedes encontrar una carpeta llamada "arcane_insight_app" con la aplicación y una carpeta llamada "arcane_insight" con el código fuente.
 
@@ -60,5 +60,7 @@ Tu lista de deseos
 - Eliminar cartas de tu lista de deseos
 - Exportar tu lista de deseos  
    
+General
+- Buscar cartas de forma global
    
 ¡Disfruta de arcane insight y que tengas una experiencia mágica en el mundo de Magic: The Gathering!
