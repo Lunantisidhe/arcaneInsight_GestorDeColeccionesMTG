@@ -28,6 +28,7 @@ package com.dam.rgb.menu;
 
 import com.dam.rgb.crud.CardCRUDManager;
 import com.dam.rgb.utilities.CardViewEnum;
+import com.dam.rgb.utilities.CollectionNames;
 
 import java.nio.charset.StandardCharsets;
 import java.util.InputMismatchException;
@@ -39,8 +40,8 @@ public class MenuManager {
     private static final Scanner SC = new Scanner(System.in, StandardCharsets.UTF_8);
 
     private static final Map<String, String> nameCorrespondence = Map.of(
-            "collection", "colección",
-            "wants", "lista de deseos"
+            CollectionNames.MAIN_COLLECTION_NAME, "colección",
+            CollectionNames.WANTS_COLLECTION_NAME, "lista de deseos"
     );
 
 
@@ -101,12 +102,12 @@ public class MenuManager {
         String[] options = {"Tu colección", "Tus mazos", "Tu lista de deseos", "Buscar cartas globales", "Cerrar sesión"};
 
         Runnable[] actions = {
-                () -> collection("collection"),
+                () -> collection(CollectionNames.MAIN_COLLECTION_NAME),
                 MenuManager::decks,
-                () -> collection("wants"),
+                () -> collection(CollectionNames.WANTS_COLLECTION_NAME),
 
                 // 1.4 - buscar cartas globales
-                () -> CardCRUDManager.searchByParams("allCards"),
+                () -> CardCRUDManager.searchByParams(CollectionNames.GLOBAL_COLLECTION_NAME),
 
                 () -> System.out.println("Ejecución finalizada.")
         };

@@ -1,8 +1,8 @@
 package com.dam.rgb.visual;
 
+import com.dam.rgb.utilities.CardBorderEnum;
 import com.dam.rgb.utilities.CardPartEnum;
 import com.dam.rgb.utilities.ColorEnum;
-import com.dam.rgb.utilities.CardBorderEnum;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,8 +10,8 @@ import org.json.JSONObject;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-import static com.dam.rgb.visual.Style.*;
 import static com.dam.rgb.utilities.CardBorderEnum.*;
+import static com.dam.rgb.visual.Style.*;
 
 public class Printer {
 
@@ -98,8 +98,8 @@ public class Printer {
 
         if (!attractionLights.isEmpty())
             printJustified("", "Attraction lights "
-                    + attractionLights.replaceAll("[\\[\\]]", "").replace(",", ", "),
-                    colorIdentity, false);
+                    + attractionLights.replaceAll("[\\[\\]]", "")
+                    .replace(",", ", "), colorIdentity, false);
 
         if (!handModifier.isEmpty() && !lifeModifier.isEmpty()) {
             printJustified("", "", colorIdentity, false);
@@ -202,10 +202,10 @@ public class Printer {
             // espaciado fases sagas, habilidades lealtad planeswalkers, niveles clases y habitaciones dungeons
             if (
                     (cardType.contains("Saga") && line.startsWith("I")) ||
-                    (cardType.contains("Planeswalker") && i != 0) ||
-                    (cardType.contains("Class") && line.startsWith("{")) ||
-                    (cardType.contains("Dungeon") && i != 0) ||
-                    (cardType.contains("Creature") && line.startsWith("LEVEL")))
+                            (cardType.contains("Planeswalker") && i != 0) ||
+                            (cardType.contains("Class") && line.startsWith("{")) ||
+                            (cardType.contains("Dungeon") && i != 0) ||
+                            (cardType.contains("Creature") && line.startsWith("LEVEL")))
                 splitText.add(" ");
 
             // fuerza y resistencia criaturas con level up
@@ -218,7 +218,7 @@ public class Printer {
             // espaciado niveles clases y criaturas con prototype
             if (
                     (cardType.contains("Class") && line.endsWith(")")) ||
-                    (cardType.contains("Creature") && line.startsWith("Prototype")))
+                            (cardType.contains("Creature") && line.startsWith("Prototype")))
                 splitText.add(" ");
         }
 

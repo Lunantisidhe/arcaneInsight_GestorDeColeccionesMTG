@@ -7,6 +7,13 @@ import java.util.Map;
 
 public class Colorizer {
 
+    public static final Map<String, ColorEnum> colorCorrespondency = Map.of(
+            "W", ColorEnum.WHITE,
+            "U", ColorEnum.BLUE,
+            "B", ColorEnum.BLACK,
+            "R", ColorEnum.RED,
+            "G", ColorEnum.GREEN
+    );
     // valores rgb de los colores empleados
     private static final int[] WHITE = {241, 235, 221};
     private static final int[] BLUE = {37, 150, 190};
@@ -16,14 +23,6 @@ public class Colorizer {
     private static final int[] GOLDEN = {217, 173, 61};
     private static final int[] SILVER = {205, 210, 217};
     private static final int[] GREY = {187, 187, 187};
-
-    public static final Map<String, ColorEnum> colorCorrespondency = Map.of(
-            "W", ColorEnum.WHITE,
-            "U", ColorEnum.BLUE,
-            "B", ColorEnum.BLACK,
-            "R", ColorEnum.RED,
-            "G", ColorEnum.GREEN
-    );
 
     // imprime texto en el color seleccionado
     public static void printColorized(String text, ColorEnum color) {
@@ -56,26 +55,26 @@ public class Colorizer {
 
         // carta incolora
         if (colorIdentity.toString().equals("[]"))
-            return new ColorEnum[] {
+            return new ColorEnum[]{
                     ColorEnum.SILVER
             };
 
         // carta tricolor+
         else if (colorIdentity.toString().length() >= 13)
-            return new ColorEnum[] {
+            return new ColorEnum[]{
                     ColorEnum.GOLDEN
             };
 
         // carta bicolor
         else if (colorIdentity.toString().length() == 9)
-            return new ColorEnum[] {
+            return new ColorEnum[]{
                     colorCorrespondency.getOrDefault(String.valueOf(colorIdentity.toString().charAt(2)), ColorEnum.SILVER),
                     colorCorrespondency.getOrDefault(String.valueOf(colorIdentity.toString().charAt(6)), ColorEnum.SILVER)
             };
 
         // carta monocolor
         else
-            return new ColorEnum[] {
+            return new ColorEnum[]{
                     colorCorrespondency.getOrDefault(String.valueOf(colorIdentity.toString().charAt(2)), ColorEnum.SILVER)
             };
     }

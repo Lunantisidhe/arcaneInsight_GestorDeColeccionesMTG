@@ -34,9 +34,11 @@ public class Connection {
     public MongoDatabase getDatabase() {
         return database;
     }
+
     public MongoCollection<Document> getCollection() {
         return collection;
     }
+
     public void setCollection(String collection) {
         this.collection = database.getCollection(collection);
     }

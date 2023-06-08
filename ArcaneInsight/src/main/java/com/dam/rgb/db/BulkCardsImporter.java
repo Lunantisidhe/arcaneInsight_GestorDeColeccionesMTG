@@ -1,5 +1,6 @@
 package com.dam.rgb.db;
 
+import com.dam.rgb.utilities.CollectionNames;
 import com.dam.rgb.utilities.Connection;
 import com.dam.rgb.visual.LoadingAnimation;
 import org.json.JSONArray;
@@ -108,7 +109,7 @@ public class BulkCardsImporter {
         Connection dataConnection = new Connection("data");
         dataConnection.getCollection().drop();
         dataConnection.close();
-        Connection cardsConnection = new Connection("allCards");
+        Connection cardsConnection = new Connection(CollectionNames.GLOBAL_COLLECTION_NAME);
         cardsConnection.getCollection().drop();
         cardsConnection.close();
 
@@ -130,7 +131,7 @@ public class BulkCardsImporter {
             JSONArray jsonArray = new JSONArray(json);
 
             // añade las cartas y la fecha de ultima actualizacion a la base de datos
-            DBManager.createSeveralCards(DBManager.JSONArrayToDocArray(jsonArray), "allCards");
+            DBManager.createSeveralCards(DBManager.jsonArrayToDocArray(jsonArray), CollectionNames.GLOBAL_COLLECTION_NAME);
             DBManager.addLastUpdatedDate(bulkUpdateDate);
 
         } catch (IOException | JSONException e) {

@@ -1,8 +1,9 @@
 package com.dam.rgb.crud;
 
 import com.dam.rgb.db.DBManager;
-import com.dam.rgb.utilities.CardViewEnum;
 import com.dam.rgb.menu.MenuManager;
+import com.dam.rgb.utilities.CardViewEnum;
+import com.dam.rgb.utilities.CollectionNames;
 import com.dam.rgb.visual.Printer;
 import org.bson.Document;
 import org.json.JSONObject;
@@ -15,14 +16,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.stream.Stream;
 
 public class CardCRUDManager {
 
-    public static Scanner SC = new Scanner(System.in, StandardCharsets.UTF_8);
-
+    private static final Scanner SC = new Scanner(System.in, StandardCharsets.UTF_8);
 
     /* METODOS CREACION */
     // busca una carta en la base de datos general y comprueba si se quiere añadir
@@ -36,8 +37,8 @@ public class CardCRUDManager {
             if (cardName != null) {
 
                 // busca todas las cartas con nombres parecidos
-                ArrayList<Document> search = DBManager.searchFuzzyCards(cardName, "name",
-                        "allCards", false);
+                List<Document> search = DBManager.searchFuzzyCards(cardName, "name",
+                        CollectionNames.GLOBAL_COLLECTION_NAME, false);
 
                 if (search.isEmpty())
                     System.out.println("No se encontró ninguna carta con este nombre");
@@ -126,8 +127,8 @@ public class CardCRUDManager {
 
                     parts = line.split(" ", 2);
 
-                    Document card = DBManager.searchFuzzyCards(parts[1], "name", "allCards",
-                            true).get(0);
+                    Document card = DBManager.searchFuzzyCards(parts[1], "name",
+                            CollectionNames.GLOBAL_COLLECTION_NAME, true).get(0);
 
                     double quantity = Double.parseDouble(parts[0]);
                     if (quantity < 0)
@@ -172,7 +173,7 @@ public class CardCRUDManager {
     public static void viewCards(String collectionName, CardViewEnum cardViewEnum) {
 
         // recuperamos las cartas de la coleccion
-        ArrayList<Document> allCards = DBManager.recoverAllCards(collectionName);
+        List<Document> allCards = DBManager.recoverAllCards(collectionName);
 
         System.out.println("\nTu colección");
 
@@ -188,9 +189,7 @@ public class CardCRUDManager {
                 if (cardViewEnum.equals(CardViewEnum.CARD)) {
                     System.out.println();
                     Printer.printCard(new JSONObject(card.toJson()), false);
-                }
-
-                else if (cardViewEnum.equals(CardViewEnum.CARD_W_IMG)) {
+                } else if (cardViewEnum.equals(CardViewEnum.CARD_W_IMG)) {
                     System.out.println();
                     Printer.printCard(new JSONObject(card.toJson()), true);
 
@@ -203,7 +202,7 @@ public class CardCRUDManager {
     // muestra todos los mazos existentes en la base de datos
     public static void viewDecks() {
 
-        ArrayList<String> deckNames = DBManager.recoverDecks();
+        List<String> deckNames = DBManager.recoverDecks();
 
         if (deckNames.isEmpty())
             System.out.println("No existe ningún mazo");
@@ -246,7 +245,7 @@ public class CardCRUDManager {
 
         String croppedDeckName = deckName.substring(0, deckName.length() - 5);
 
-        ArrayList<Document> deckCards = DBManager.recoverAllCards(deckName);
+        List<Document> deckCards = DBManager.recoverAllCards(deckName);
 
         if (deckCards.isEmpty())
             System.out.println("No existe ninguna carta en el deck " + croppedDeckName);
@@ -289,40 +288,40 @@ public class CardCRUDManager {
 
                     if (type.contains("Basic")) {
                         if (type.contains("Plains"))
-                            plainsCards+= quantity;
+                            plainsCards += quantity;
                         else if (type.contains("Island"))
-                            islandCards+= quantity;
+                            islandCards += quantity;
                         else if (type.contains("Swamp"))
-                            swampCards+= quantity;
+                            swampCards += quantity;
                         else if (type.contains("Mountain"))
-                            mountainCards+= quantity;
+                            mountainCards += quantity;
                         else if (type.contains("Forest"))
-                            forestCards+= quantity;
+                            forestCards += quantity;
                         else
-                            otherLandCards+= quantity;
+                            otherLandCards += quantity;
 
                     } else
-                        otherLandCards+= quantity;
+                        otherLandCards += quantity;
 
                 } else if (type.contains("Creature"))
-                    creatureCards+= quantity;
+                    creatureCards += quantity;
                 else if (type.contains("Instant"))
-                    instantCards+= quantity;
+                    instantCards += quantity;
                 else if (type.contains("Sorcery"))
-                    sorceryCards+= quantity;
+                    sorceryCards += quantity;
                 else if (type.contains("Artifact"))
-                    artifactCards+= quantity;
+                    artifactCards += quantity;
                 else if (type.contains("Enchantment"))
-                    enchantmentCards+= quantity;
+                    enchantmentCards += quantity;
                 else if (type.contains("Planeswalker"))
-                    planeswalkerCards+= quantity;
+                    planeswalkerCards += quantity;
                 else
-                    otherCardTypes+= quantity;
+                    otherCardTypes += quantity;
 
 
                 // impresion carta
                 double quantityInCollection = DBManager.searchCardInCollection(
-                        card.getString("name"), "name", "collection");
+                        card.getString("name"), "name", CollectionNames.MAIN_COLLECTION_NAME);
 
                 StringBuilder sb = new StringBuilder("\n(x")
                         .append(Math.round(card.getDouble("quantity"))).append(") (");
@@ -400,7 +399,7 @@ public class CardCRUDManager {
 
         if (fuzzyCardParam != null) {
 
-            ArrayList<Document> cards = DBManager.searchFuzzyCards(fuzzyCardParam, searchField,
+            List<Document> cards = DBManager.searchFuzzyCards(fuzzyCardParam, searchField,
                     collectionName, false);
 
             if (cards.isEmpty())
@@ -418,7 +417,7 @@ public class CardCRUDManager {
     public static void deleteCard(String collectionName) {
 
         // recuperamos las cartas de la coleccion
-        ArrayList<Document> allCards = DBManager.recoverAllCards(collectionName);
+        List<Document> allCards = DBManager.recoverAllCards(collectionName);
 
         System.out.println("\nCartas que puedes eliminar");
 
@@ -458,7 +457,7 @@ public class CardCRUDManager {
     // muestra los mazos de la coleccion y comprueba si se quiere eliminar alguno
     public static void deleteDeck() {
 
-        ArrayList<String> deckNames = DBManager.recoverDecks();
+        List<String> deckNames = DBManager.recoverDecks();
 
         if (deckNames.isEmpty())
             System.out.println("No existe ningún mazo");
@@ -544,7 +543,7 @@ public class CardCRUDManager {
                 pathStr += ".txt";
 
             // recuperamos las cartas de la coleccion
-            ArrayList<Document> cards = DBManager.recoverAllCards(collectionName);
+            List<Document> cards = DBManager.recoverAllCards(collectionName);
 
             if (cards.isEmpty())
                 System.out.println("No existe ninguna carta a exportar");
@@ -587,8 +586,8 @@ public class CardCRUDManager {
         DBManager.createDeck("Yorion blink EDH");
 
         String[][] pathsStr = {
-                {"collection", "../test_data/testData_collection.txt"},
-                {"wants", "../test_data/testData_wants.txt"},
+                {CollectionNames.MAIN_COLLECTION_NAME, "../test_data/testData_collection.txt"},
+                {CollectionNames.WANTS_COLLECTION_NAME, "../test_data/testData_wants.txt"},
                 {"Mono-red aggro_deck", "../test_data/testData_deck1.txt"},
                 {"Yorion blink EDH_deck", "../test_data/testData_deck2.txt"}
         };
@@ -609,8 +608,8 @@ public class CardCRUDManager {
 
                     parts = line.split(" ", 2);
 
-                    Document card = DBManager.searchFuzzyCards(parts[1], "name", "allCards",
-                            true).get(0);
+                    Document card = DBManager.searchFuzzyCards(parts[1], "name",
+                            CollectionNames.GLOBAL_COLLECTION_NAME, true).get(0);
 
                     double quantity = Double.parseDouble(parts[0]);
                     if (quantity < 0)

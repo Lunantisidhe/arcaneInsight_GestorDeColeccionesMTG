@@ -1,5 +1,6 @@
 package com.dam.rgb.db;
 
+import com.dam.rgb.utilities.CollectionNames;
 import com.dam.rgb.utilities.Connection;
 import com.google.gson.Gson;
 import com.mongodb.client.MongoCursor;
@@ -11,8 +12,10 @@ import org.json.JSONObject;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 import static com.mongodb.client.model.Updates.set;
 
@@ -61,11 +64,11 @@ public class DBManager {
     }
 
     // añade una lista de cartas a la base de datos
-    public static ArrayList<Document> JSONArrayToDocArray(JSONArray cardJsonArray) {
+    public static List<Document> jsonArrayToDocArray(JSONArray cardJsonArray) {
 
         if (cardJsonArray == null || cardJsonArray.isEmpty()) {
             System.err.println("Error: no se pudieron añadir las cartas.");
-            return null;
+            return Collections.emptyList();
         }
 
         // leemos el array de cartas
@@ -94,19 +97,18 @@ public class DBManager {
     }
 
     // añade una lista de cartas a la base de datos
-    public static void createSeveralCards(ArrayList<Document> cardDocs, String collectionName) {
+    public static void createSeveralCards(List<Document> cardDocs, String collectionName) {
 
         // conexion base de datos mongodb
         Connection connection = new Connection(collectionName);
 
         // importacion todas las cartas
-        if (collectionName.equals("allCards")) {
+        if (collectionName.equals(CollectionNames.GLOBAL_COLLECTION_NAME)) {
 
             connection.getCollection().insertMany(cardDocs);
             connection.close();
-        }
 
-        else {
+        } else {
 
             ArrayList<Document> cardsToAdd = new ArrayList<>();
 
@@ -152,11 +154,12 @@ public class DBManager {
         Connection connection = new Connection();
 
         // el mazo ya existe
-        if (connection.getDatabase().listCollectionNames().into(new ArrayList<>()).contains(deckName + "_deck"))
+        if (connection.getDatabase().listCollectionNames().into(new ArrayList<>())
+                .contains(deckName + CollectionNames.DECK_COLLECTION_EXTENSION))
             System.out.println("El mazo " + deckName + " ya existe");
 
         else {
-            connection.setCollection(deckName + "_deck");
+            connection.setCollection(deckName + CollectionNames.DECK_COLLECTION_EXTENSION);
 
             // crea un objeto con datos del mazo
             Document data = new Document().append("data_type", "info").append("creation_date", LocalDateTime.now());
@@ -203,7 +206,7 @@ public class DBManager {
     }
 
     // recupera todas las cartas de una coleccion
-    public static ArrayList<Document> recoverAllCards(String collectionName) {
+    public static List<Document> recoverAllCards(String collectionName) {
 
         // conexion base de datos mongodb
         Connection connection = new Connection(collectionName);
@@ -224,8 +227,8 @@ public class DBManager {
     }
 
     // recupera las cartas coincidentes de la base de datos
-    public static ArrayList<Document> searchFuzzyCards
-        (String fuzzyCardParam, String searchField, String collectionName, boolean firstCardOnly) {
+    public static List<Document> searchFuzzyCards
+    (String fuzzyCardParam, String searchField, String collectionName, boolean firstCardOnly) {
 
         // conexion base de datos mongodb
         Connection connection = new Connection(collectionName);
@@ -273,19 +276,19 @@ public class DBManager {
     }
 
     // recupera todos los mazos existentes en la base de datos
-    public static ArrayList<String> recoverDecks() {
+    public static List<String> recoverDecks() {
 
         // conexion base de datos mongodb
         Connection connection = new Connection();
 
         // recupera los nombres de los mazos
         List<String> deckNames = connection.getDatabase().listCollectionNames().into(new ArrayList<>())
-                .stream().filter(name -> name.endsWith("_deck")).collect(Collectors.toList());
+                .stream().filter(name -> name.endsWith(CollectionNames.DECK_COLLECTION_EXTENSION)).toList();
 
         // cierra el objeto conexion
         connection.close();
 
-        return (ArrayList<String>) deckNames;
+        return deckNames;
     }
 
 
