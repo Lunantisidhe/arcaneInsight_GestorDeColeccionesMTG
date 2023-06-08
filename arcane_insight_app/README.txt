@@ -5,7 +5,8 @@
  /     \   /     \
   arcane • insight
 
-arcane insight es una aplicación diseñada para brindar información y herramientas útiles para los aficionados al juego de cartas Magic: The Gathering. Esta guía te proporcionará las instrucciones necesarias para asegurarte de que la aplicación funcione correctamente en tu entorno.
+arcane insight es una aplicación diseñada para brindar información y herramientas útiles para los aficionados al juego de cartas Magic: The Gathering.
+Esta guía te proporcionará las instrucciones necesarias para asegurarte de que la aplicación funcione correctamente en tu entorno.
 
 
 Instalación
