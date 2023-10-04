@@ -64,3 +64,6 @@ General
 - Buscar cartas de forma global
    
 ¡Disfruta de arcane insight y que tengas una experiencia mágica en el mundo de Magic: The Gathering!
+
+
+Esta obra se rige bajo una licencia CC BY-NC-SA
